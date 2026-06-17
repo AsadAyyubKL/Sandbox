@@ -1,888 +1,262 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Oneforallpro — Stories &amp; Sequence</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Option D — Journey Map</title>
 <style>
-  :root{
-    --ink:#1A1D23; --ink-soft:#3A404B; --paper:#E7EAEE; --card:#FFFFFF;
-    --line:#C9CED6; --line-soft:#E2E6EB;
-    --amber:#E8851E; --blue:#2F6FB0; --teal:#1F8A70; --graphite:#4B5563;
-    --hi:#D7263D; --med:#C8860A; --low:#6B7280; --new:#10A171;
-    --disp:"Space Grotesk","Helvetica Neue",Arial,sans-serif;
-    --body:"Inter",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
-    --mono:ui-monospace,"SF Mono","Cascadia Mono",Menlo,Consolas,monospace;
-  }
-  *{box-sizing:border-box}
-  body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);line-height:1.5;-webkit-font-smoothing:antialiased}
-  .top{background:var(--ink);color:#EDEFF2;border-bottom:3px solid var(--amber)}
-  .top-inner{max-width:1180px;margin:0 auto;padding:18px 24px 14px}
-  .kicker{font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--amber);margin:0 0 6px}
-  .top h1{font-family:var(--disp);font-weight:700;letter-spacing:-.02em;font-size:clamp(1.5rem,3.4vw,2.1rem);margin:0;line-height:1.05}
-  .top p{margin:8px 0 0;font-size:13.5px;color:#A9B0BC;max-width:72ch}
-  .src{font-family:var(--mono);font-size:11px;color:#8B93A1;margin-top:10px;display:flex;flex-wrap:wrap;gap:6px 16px}
-  .src b{color:#C7CDD7;font-weight:500}
-  .controls{position:sticky;top:0;z-index:30;background:rgba(231,234,238,.93);backdrop-filter:blur(6px);border-bottom:1px solid var(--line)}
-  .controls-inner{max-width:1180px;margin:0 auto;padding:10px 24px;display:flex;flex-wrap:wrap;gap:12px 18px;align-items:center;justify-content:space-between}
-  .tabs{display:flex;gap:6px}
-  .tabs button{font-family:var(--disp);font-weight:600;font-size:13px;border:1px solid var(--line);background:var(--card);color:var(--ink-soft);padding:8px 15px;border-radius:3px;cursor:pointer;transition:all .15s}
-  .tabs button:hover{border-color:var(--ink)}
-  .tabs button[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
-  .story-tools{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
-  body.hide-tools .story-tools{display:none}
-  .seg{display:flex;flex-wrap:wrap;gap:6px}
-  .seg button{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;border:1px solid var(--line);background:var(--card);color:var(--ink-soft);padding:7px 11px;border-radius:2px;cursor:pointer;transition:all .15s}
-  .seg button:hover{border-color:var(--ink)}
-  .seg button[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
-  .seg button.c[aria-pressed="true"]{background:var(--amber);border-color:var(--amber)}
-  .seg button.p[aria-pressed="true"]{background:var(--blue);border-color:var(--blue)}
-  .seg button.a[aria-pressed="true"]{background:var(--teal);border-color:var(--teal)}
-  .seg button.s[aria-pressed="true"]{background:var(--graphite);border-color:var(--graphite)}
-  main{max-width:1180px;margin:0 auto;padding:22px 24px 80px}
-  .view.hidden{display:none}
-  .legend{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;font-size:12px;color:var(--ink-soft);margin:0 0 14px;padding:11px 14px;background:var(--card);border:1px solid var(--line);border-radius:4px}
-  .legend .item{display:flex;align-items:center;gap:7px}
-  .legend .sw{width:12px;height:12px;border-radius:2px}
-  .legend .lk{width:26px;border-top-width:2px;border-top-style:solid}
-  .hint{font-family:var(--mono);font-size:11px;color:var(--ink-soft);margin:0 0 20px;letter-spacing:.03em}
-  .hint b{color:var(--ink-soft)}
-  /* story view */
-  .canvas{overflow-x:auto;padding-bottom:10px}
-  .swimlane{display:flex;align-items:stretch;padding:16px 0;border-bottom:1px dashed var(--line)}
-  .swimlane:last-child{border-bottom:none}
-  .swimlane.customer{--lane:var(--amber)} .swimlane.provider{--lane:var(--blue)}
-  .swimlane.admin{--lane:var(--teal)} .swimlane.system{--lane:var(--graphite)}
-  .lane-label{position:sticky;left:0;z-index:5;flex:0 0 150px;width:150px;background:var(--paper);padding-right:14px;display:flex;flex-direction:column;justify-content:center}
-  .lane-label .tag{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#fff;background:var(--lane);padding:3px 7px;border-radius:2px;width:fit-content;margin-bottom:6px}
-  .lane-label h2{font-family:var(--disp);font-weight:600;font-size:1.02rem;margin:0;line-height:1.1}
-  .lane-label .role{font-size:11.5px;color:var(--low);margin-top:3px}
-  .lane-label .cnt{font-family:var(--mono);font-size:10.5px;color:var(--ink-soft);margin-top:7px}
-  .lane-label .cnt b{color:var(--hi)}
-  .track{display:flex;align-items:stretch;flex:0 0 auto}
-  .node{flex:0 0 232px;width:232px;min-height:132px;background:var(--card);border:1px solid var(--line);border-top:3px solid var(--lane);border-radius:5px;padding:12px 13px 11px;text-align:left;cursor:pointer;display:flex;flex-direction:column;gap:5px;transition:transform .14s,box-shadow .14s;font-family:inherit}
-  .node:hover{transform:translateY(-3px);box-shadow:0 8px 20px rgba(26,29,35,.13)}
-  .node.active{box-shadow:0 0 0 2px var(--lane),0 8px 20px rgba(26,29,35,.16)}
-  .node-top{display:flex;align-items:center;gap:6px}
-  .node .sid{font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:#fff;background:var(--lane);padding:2px 7px;border-radius:20px}
-  .newpill{font-family:var(--mono);font-size:8.5px;letter-spacing:.12em;color:#fff;background:var(--new);padding:2px 6px;border-radius:20px}
-  .node .asa{font-size:11px;color:var(--low)}
-  .node .want{font-family:var(--disp);font-weight:600;font-size:.95rem;line-height:1.2;color:var(--ink);letter-spacing:-.01em}
-  .node .want b{color:var(--lane);font-weight:600}
-  .node .nfoot{margin-top:auto;padding-top:6px}
-  .qbadge{font-family:var(--mono);font-size:10px;letter-spacing:.04em;padding:2px 7px;border-radius:20px;background:#EEF1F4;color:var(--ink-soft);display:inline-flex;align-items:center;gap:4px}
-  .qbadge.has-hi{background:#fbe7ea;color:var(--hi)}
-  .qbadge.zero{background:transparent;color:#AEB4BD;padding-left:0}
-  .conn{flex:0 0 40px;width:40px;align-self:center;position:relative;height:2px}
-  .conn::before{content:"";position:absolute;top:0;left:2px;right:8px;height:2px;background:var(--lane);opacity:.6}
-  .conn::after{content:"";position:absolute;right:2px;top:-4px;border-left:8px solid var(--lane);border-top:5px solid transparent;border-bottom:5px solid transparent;opacity:.7}
-  .swimlane.hidden{display:none}
-  /* drawer */
-  .backdrop{position:fixed;inset:0;background:rgba(20,23,30,.42);opacity:0;visibility:hidden;transition:opacity .2s;z-index:60}
-  .backdrop.open{opacity:1;visibility:visible}
-  .drawer{position:fixed;top:0;right:0;height:100%;width:min(430px,100%);background:var(--card);box-shadow:-12px 0 40px rgba(20,23,30,.22);transform:translateX(100%);transition:transform .24s ease;z-index:70;display:flex;flex-direction:column}
-  .drawer.open{transform:translateX(0)}
-  .drawer-head{padding:20px 22px 16px;border-bottom:1px solid var(--line-soft);position:relative}
-  .drawer-head .dtag{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#fff;padding:3px 8px;border-radius:2px;display:inline-block;margin-bottom:10px}
-  .drawer-head .dstep{font-family:var(--mono);font-size:11px;color:var(--low);margin:0 0 3px}
-  .drawer-head h3{font-family:var(--disp);font-weight:600;font-size:1.22rem;margin:0;letter-spacing:-.015em;display:inline}
-  .drawer-head .dnew{font-family:var(--mono);font-size:9px;letter-spacing:.12em;color:#fff;background:var(--new);padding:2px 7px;border-radius:20px;margin-left:8px;vertical-align:middle;display:none}
-  .dclose{position:absolute;top:16px;right:16px;width:30px;height:30px;border:1px solid var(--line);background:var(--card);border-radius:3px;cursor:pointer;font-size:16px;color:var(--ink-soft);line-height:1}
-  .dclose:hover{border-color:var(--ink);color:var(--ink)}
-  .drawer-body{padding:18px 22px 34px;overflow-y:auto}
-  .story{background:#fbfcfd;border:1px solid var(--line-soft);border-left:3px solid var(--dlane,var(--amber));border-radius:4px;padding:14px 15px;margin-bottom:20px}
-  .story p{margin:0 0 7px;font-size:14px;line-height:1.45}
-  .story p:last-child{margin-bottom:0}
-  .story .lab{font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--low);display:block;margin-bottom:1px}
-  .story .em{color:var(--ink);font-weight:600}
-  .sec-label{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--low);margin:0 0 11px}
-  ul.ac{list-style:none;margin:0 0 22px;padding:0;display:flex;flex-direction:column;gap:8px}
-  ul.ac li{display:grid;grid-template-columns:auto 1fr;gap:9px;align-items:start;font-size:13.5px;color:var(--ink-soft)}
-  ul.ac li::before{content:"";width:13px;height:13px;border:1.5px solid var(--line);border-radius:3px;margin-top:3px;flex:0 0 13px}
-  ul.ac.codes li::before{display:none}
-  ul.ac.codes li{grid-template-columns:1fr;gap:2px}
-  ul.ac.codes .cc{font-family:var(--mono);font-size:10px;color:#fff;padding:2px 7px;border-radius:20px;width:fit-content}
-  ul.queries{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
-  ul.queries li{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:start;font-size:13.5px;padding:11px 12px;background:#fafbfc;border:1px solid var(--line-soft);border-left-width:3px;border-radius:3px}
-  ul.queries li.high{border-left-color:var(--hi)} ul.queries li.med{border-left-color:var(--med)} ul.queries li.low{border-left-color:var(--low)}
-  .dot{width:9px;height:9px;border-radius:50%;margin-top:5px}
-  .dot.high{background:var(--hi)} .dot.med{background:var(--med)} .dot.low{background:var(--low)}
-  .qbody .qtext{color:var(--ink);display:block}
-  .qbody .tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:7px}
-  .mtag{font-family:var(--mono);font-size:9.5px;letter-spacing:.05em;border:1px solid var(--line);color:var(--ink-soft);padding:2px 5px;border-radius:2px}
-  .empty{font-size:13px;color:var(--low);font-style:italic}
-  /* sequence diagram */
-  .seqwrap{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--card)}
-  .seqinner{position:relative}
-  .seqhead{position:sticky;top:0;z-index:6;background:rgba(255,255,255,.96);backdrop-filter:blur(6px);border-bottom:1px solid var(--line-soft)}
-  .phead{position:absolute;top:12px;width:150px;border:1px solid var(--line);border-top:3px solid var(--pc);border-radius:8px;padding:8px 10px;text-align:center;background:var(--card)}
-  .phead b{font-family:var(--disp);font-size:14px;display:block;line-height:1.1}
-  .phead small{color:var(--low);font-size:10.5px}
-  svg.seqsvg{display:block}
-  .mhit{fill:transparent;cursor:pointer}
-  .mhit:hover{fill:rgba(26,29,35,.04)}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',system-ui,sans-serif;background:#F9FAFB;color:#111827;}
+.header{background:linear-gradient(135deg,#1E293B,#0F172A);padding:20px 24px 18px;color:#fff;}
+.header-inner{max-width:1060px;margin:0 auto;}
+.brand{display:flex;align-items:center;gap:8px;margin-bottom:5px;font-size:11px;font-weight:700;letter-spacing:2px;color:#94A3B8;text-transform:uppercase;}
+h1{font-size:21px;font-weight:800;letter-spacing:-.5px;}
+.opt-tag{font-size:11.5px;color:#94A3B8;margin-top:3px;display:block;}
+.content{max-width:1060px;margin:0 auto;padding:22px 14px 60px;}
+.legend{background:#fff;border:1px solid #E5E7EB;border-radius:10px;padding:10px 14px;margin-bottom:16px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;font-size:12px;color:#64748B;}
+.badge-out,.badge-in{font-size:13px;font-weight:700;}
+.badge-out{color:#F59E0B;}
+.badge-in{color:#94A3B8;}
+/* ── Journey map ── */
+.map{background:#EAECF0;border:1.5px solid #D1D5DB;border-radius:16px;padding:10px;margin-bottom:18px;display:flex;flex-direction:column;gap:10px;}
+.map-row{display:flex;align-items:stretch;background:#fff;border:1.5px solid #E5E7EB;border-radius:12px;overflow:hidden;}
+.lane-lbl{width:120px;flex-shrink:0;padding:14px 12px;border-right:1px solid #F1F5F9;background:#FAFAFA;display:flex;flex-direction:column;align-items:flex-start;gap:5px;justify-content:center;}
+.lane-lbl .lane-icon{font-size:20px;}
+.lane-lbl .lane-name{font-size:11.5px;font-weight:700;line-height:1.2;color:#1E293B;}
+.lane-lbl .lane-sub{text-transform:uppercase;letter-spacing:.5px;font-size:9px;color:#94A3B8;}
 
-  /* ── FLOW DIAGRAM ─────────────────────────────── */
-  .flowwrap{overflow-x:auto;overflow-y:visible;border:1px solid var(--line);border-radius:12px;background:#F8F9FB}
-  .flowwrap svg{display:block;margin:0 auto}
-  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
-  :focus-visible{outline:2px solid var(--amber);outline-offset:2px}
-</style>
-</head>
-<body>
+.mcard{
+  position:relative;border:1.5px solid;border-radius:9px;
+  padding:9px 10px;width:136px;min-height:78px;
+  cursor:pointer;transition:.15s;
+  display:flex;flex-direction:column;gap:3px;
+  background:#fff;flex-shrink:0;
+}
+.mcard:hover{transform:translateY(-2px);box-shadow:0 5px 16px rgba(0,0,0,.11);}
+.mcard-badges{position:absolute;top:4px;right:5px;display:flex;gap:2px;}
+.mcard-icon{font-size:15px;line-height:1;}
+.mcard-title{font-size:11px;font-weight:600;color:#374151;line-height:1.25;margin-top:2px;}
+/* Arrow between consecutive cards in same row */
+.flow-arrow{width:26px;flex-shrink:0;position:relative;display:flex;align-items:center;justify-content:center;}
+.flow-arrow::before{content:'';position:absolute;top:50%;left:2px;right:8px;height:1.5px;background:currentColor;opacity:.28;transform:translateY(-50%);}
+.flow-arrow::after{content:'▶';position:absolute;right:1px;top:50%;transform:translateY(-50%);font-size:7px;opacity:.32;}
+/* Row-wrap indicator between rows */
+/* Connector overlay */
+.map-row{position:relative;}
 
-<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
-  <marker id="ah-call" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto"><path d="M0,0 L9,4 L0,8 z" fill="#1A1D23"/></marker>
-  <marker id="ah-ret" markerWidth="11" markerHeight="11" refX="8" refY="4" orient="auto"><path d="M0,0 L9,4 L0,8" fill="none" stroke="#1A1D23" stroke-width="1.3"/></marker>
-</defs></svg>
+.links-sec{background:#fff;border:1.5px solid #E5E7EB;border-radius:12px;padding:12px 16px;margin-bottom:20px;}
+.links-ttl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#64748B;margin-bottom:8px;}
+.link-row{display:flex;align-items:center;flex-wrap:wrap;gap:6px;padding:7px 8px;border-radius:7px;cursor:pointer;font-size:12px;border-bottom:1px solid #F1F5F9;transition:background .15s;}
+.link-row:hover{background:#F8FAFC;}
+.link-row:last-child{border-bottom:none;}
+.lr-from{font-weight:600;}
+.lr-arr{color:#94A3B8;font-weight:700;}
+.lr-to{font-weight:600;}
+.lr-lbl{color:#94A3B8;font-size:11.5px;flex-basis:100%;margin-left:2px;}
+/* Modal */
+.overlay{display:none;position:fixed;inset:0;background:rgba(15,23,42,.45);z-index:200;align-items:center;justify-content:center;padding:20px;}
+.overlay.open{display:flex;}
+.modal{background:#fff;border-radius:14px;width:100%;max-width:600px;height:88vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.22);}
+.modal-inner{display:flex;flex-direction:column;height:100%;min-height:0;}
+.modal-top{display:flex;align-items:center;justify-content:space-between;padding:13px 16px;flex-shrink:0;}
+.modal-ttl{display:flex;align-items:center;gap:11px;}
+.mt-icon{font-size:22px;}
+.mt-iface{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;margin-bottom:2px;}
+.mt-title{font-size:16px;font-weight:700;}
+.modal-close{background:#F1F5F9;border:none;border-radius:8px;width:28px;height:28px;font-size:13px;cursor:pointer;color:#64748B;}
+.modal-body{padding:12px 16px 24px;overflow-y:auto;flex:1;min-height:0;}
+.mstep{display:flex;gap:9px;padding:8px 10px;border-radius:9px;margin-bottom:5px;border:1.5px solid #F1F5F9;background:#fff;}
+.mstep.has-impact{border-color:#FDE68A;background:#FFFBEB;}
+.dnum{width:24px;height:24px;border-radius:50%;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;color:#fff;}
+.dbody{flex:1;}
+.dtxt{font-size:13px;color:#1E293B;line-height:1.45;font-weight:500;}
+.tpill{display:inline-flex;align-items:center;gap:5px;padding:5px 11px 5px 10px;border-radius:8px;border:1.5px solid;font-size:11.5px;font-weight:600;cursor:pointer;margin-top:4px;transition:opacity .15s,transform .1s;position:relative;}
+.tpill::before{content:'◀';position:absolute;left:-10px;top:50%;transform:translateY(-50%);font-size:9px;color:inherit;opacity:.6;}
+.tpill:hover{opacity:.82;transform:translateX(3px);}
+.pills-wrap{margin-top:6px;display:flex;flex-wrap:wrap;gap:6px;}
+.nav-row{display:none;}
+.nav-btn{padding:6px 14px;border:none;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;color:#fff;}
+.nav-btn:hover{opacity:.85;}
+.back-btn{background:transparent!important;border:1.5px solid;}
+.nav-ctr{font-size:12px;font-weight:600;}
 
-<header class="top">
-  <div class="top-inner" style="display:flex;align-items:center;gap:16px;padding:16px 24px">
-    <div style="width:44px;height:44px;border-radius:12px;background:linear-gradient(140deg,var(--amber),#FF9A3D);display:flex;align-items:center;justify-content:center;flex:0 0 44px">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
-    </div>
-    <div>
-      <div style="font-family:var(--disp);font-weight:700;font-size:1.45rem;letter-spacing:-.02em;color:#EDEFF2;line-height:1.1">OneForAll Pro</div>
-      <div style="font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#9AA0AD;margin-top:3px">Working BA Board</div>
-    </div>
-  </div>
-</header>
+.esec{border-radius:10px;margin-top:14px;border:1.5px solid #FCA5A5;overflow:hidden;}
+.esec-hdr{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:#FEE2E2;}
+.esec-ttl{font-size:11.5px;font-weight:700;color:#991B1B;display:flex;align-items:center;gap:5px;}
+.addbtn{font-size:10.5px;font-weight:600;border:none;border-radius:4px;padding:2px 8px;cursor:pointer;background:#FECDD3;color:#991B1B;font-family:inherit;}
+.elist{padding:6px 10px 8px;background:#FFF5F5;}
+.ei{font-size:12.5px;color:#7F1D1D;padding:5px 28px 5px 8px;border-radius:6px;border:1.5px solid transparent;outline:none;position:relative;margin-bottom:3px;cursor:text;min-height:28px;line-height:1.45;}
+.ei:focus{border-color:#94A3B8;background:#fff;}
+.ei:hover:not(:focus){background:rgba(0,0,0,.03);}
+.delbtn{display:none;position:absolute;right:4px;top:50%;transform:translateY(-50%);background:#F1F5F9;border:none;border-radius:3px;font-size:9px;color:#64748B;cursor:pointer;padding:1px 4px;}
+.ei:hover .delbtn{display:block;}
+.alt-box{margin-bottom:10px;padding:8px 12px;background:#FEF9C3;border-radius:8px;border-left:3px solid #FBBF24;font-size:12px;}
+.alt-box b{color:#92400E;display:block;margin-bottom:3px;}
+.alt-item{color:#78350F;margin-top:3px;}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(99,102,241,.45)}70%{box-shadow:0 0 0 12px transparent}100%{box-shadow:none}}
+.hl{animation:pulse .85s ease-out;}
 
-<nav class="controls" aria-label="Controls">
-  <div class="controls-inner">
-    <div class="tabs" id="tabs" role="group" aria-label="View">
-      <button data-view="story" aria-pressed="true">Story flow</button>
-      <button data-view="seq" aria-pressed="false">Sequence diagram</button>
-      <button data-view="plain" aria-pressed="false">Flow diagram</button>
-    </div>
-    <div class="story-tools">
-      <div class="seg" id="laneFilter" role="group" aria-label="Filter by interface">
-        <button data-lane="all" aria-pressed="true">All</button>
-        <button class="c" data-lane="customer" aria-pressed="false">Customer</button>
-        <button class="p" data-lane="provider" aria-pressed="false">Provider</button>
-        <button class="a" data-lane="admin" aria-pressed="false">Admin</button>
-        <button class="s" data-lane="system" aria-pressed="false">System</button>
-      </div>
-    </div>
-  </div>
-</nav>
+@media(max-width:640px){.lane-lbl{width:90px;font-size:9.5px;}.mcard{width:110px;}.map-row{flex-wrap:wrap;}}
 
-<main>
-  <section class="view" id="storyView">
-    <div class="legend">
-      <span class="item"><span class="sw" style="background:var(--amber)"></span>Customer</span>
-      <span class="item"><span class="sw" style="background:var(--blue)"></span>Provider</span>
-      <span class="item"><span class="sw" style="background:var(--teal)"></span>Admin</span>
-      <span class="item"><span class="sw" style="background:var(--graphite)"></span>System</span>
-      <span class="item"><span class="sw" style="background:var(--new)"></span>New (SOW gap filled)</span>
-      <span class="item" style="margin-left:auto"><span class="dot high" style="margin-top:0"></span>High</span>
-      <span class="item"><span class="dot med" style="margin-top:0"></span>Medium</span>
-      <span class="item"><span class="dot low" style="margin-top:0"></span>Low</span>
-    </div>
-    <p class="hint">↔ Scroll a lane to follow the sequence · <b>click a story</b> for criteria + queries · badge = query count (⚑ high)</p>
-    <div class="canvas" id="canvas"></div>
-  </section>
 
-  <section class="view hidden" id="seqView">
-    <div class="legend">
-      <span class="item"><span class="lk" style="border-color:var(--ink);border-top-style:solid"></span>Message / call</span>
-      <span class="item"><span class="lk" style="border-color:var(--ink);border-top-style:dashed"></span>Return / response</span>
-      <span class="item"><span style="font-family:var(--mono);font-size:11px;color:var(--low)">↺ self</span> = same participant acts</span>
-      <span class="item" style="margin-left:auto"><span class="dot high" style="margin-top:0"></span>High</span>
-      <span class="item"><span class="dot med" style="margin-top:0"></span>Medium</span>
-      <span class="item"><span class="dot low" style="margin-top:0"></span>Low</span>
-    </div>
-    <p class="hint">Time flows top → bottom · each arrow is one interaction · <b>the badge on a message = its open queries</b> — click any message to read them. Sections are the end-to-end flows.</p>
-    <div class="seqwrap"><div class="seqinner" id="seqInner"><div class="seqhead" id="seqHead"></div></div></div>
-  </section>
+/* ── Lane layout ── */
+.lane-cards{display:flex;flex-direction:column;gap:0;padding:12px 14px;flex:1;}
+.card-row{display:flex;align-items:center;flex-wrap:nowrap;}
 
-  <section class="view hidden" id="plainView">
-    <div class="legend">
-      <span class="item"><svg width="36" height="22" viewBox="0 0 36 22"><rect x="0" y="1" width="36" height="20" rx="6" fill="#EBF2FB" stroke="#2F6FB0" stroke-width="1.5"/></svg> Step / action</span>
-      <span class="item"><svg width="30" height="24" viewBox="0 0 30 24"><polygon points="15,1 29,12 15,23 1,12" fill="#FFF3EB" stroke="#E8851E" stroke-width="1.5"/></svg> Decision</span>
-      <span class="item"><svg width="36" height="22" viewBox="0 0 36 22"><rect x="0" y="1" width="36" height="20" rx="10" fill="#FFF8EC" stroke="#C8860A" stroke-width="1.5" stroke-dasharray="4 2"/></svg> Still to decide <span style="color:var(--low);font-size:11px">(hover for detail)</span></span>
-      <span class="item"><svg width="36" height="22" viewBox="0 0 36 22"><rect x="0" y="1" width="36" height="20" rx="10" fill="#1A1D23"/><text x="18" y="15" text-anchor="middle" font-size="11" fill="#fff" font-family="Inter,sans-serif">Start / End</text></svg></span>
-    </div>
-    <p class="hint">Follow the arrows top → bottom through each swim lane · <b>click any amber dashed box</b> to read the open decision in the drawer on the right</p>
-    <div class="flowwrap"><div id="plainRoot"></div></div>
-  </section>
-</main>
+/* ── Card ── */
+.mcard{
+  position:relative;border:1.5px solid;border-radius:9px;
+  padding:9px 10px;width:140px;min-height:80px;
+  cursor:pointer;transition:.15s;
+  display:flex;flex-direction:column;gap:3px;
+  background:#fff;flex-shrink:0;
+}
+.mcard:hover{transform:translateY(-2px);box-shadow:0 5px 16px rgba(0,0,0,.11);}
+.mcard-badges{position:absolute;top:4px;right:5px;display:flex;gap:2px;}
+.mcard-icon{font-size:16px;line-height:1;}
+.mcard-title{font-size:11.5px;font-weight:600;color:#374151;line-height:1.3;margin-top:3px;}
 
-<div class="backdrop" id="backdrop"></div>
-<aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="dTitle" aria-hidden="true">
-  <div class="drawer-head">
-    <span class="dtag" id="dTag">Flow</span>
-    <button class="dclose" id="dClose" aria-label="Close">✕</button>
-    <p class="dstep" id="dStep"></p>
-    <h3 id="dTitle"></h3><span class="dnew" id="dNew">New</span>
-  </div>
-  <div class="drawer-body">
-    <div class="story" id="dStory"></div>
-    <p class="sec-label" id="acLabel">Acceptance criteria</p>
-    <ul class="ac" id="dAc"></ul>
-    <p class="sec-label">Queries to handle</p>
-    <ul class="queries" id="dQueries"></ul>
-  </div>
-</aside>
+/* ── Arrow between cards ── */
+.flow-arrow{width:30px;flex-shrink:0;position:relative;display:flex;align-items:center;justify-content:center;}
+.flow-arrow::before{content:'';position:absolute;top:50%;left:2px;right:8px;height:1.5px;background:currentColor;opacity:.3;transform:translateY(-50%);}
+.flow-arrow::after{content:'▶';position:absolute;right:1px;top:50%;transform:translateY(-50%);font-size:7px;opacity:.35;}
 
+/* ── Row separators ── */
+.row-sep{display:flex;align-items:center;gap:8px;margin:6px 0 4px;padding-left:2px;}
+.row-sep span{font-size:10px;font-weight:600;letter-spacing:.04em;white-space:nowrap;}
+.row-sep::before{content:'';flex:1;max-width:24px;}
+.row-sep::after{content:'';flex:1;height:1px;background:var(--line);}
+.continued-sep span{color:#94A3B8;}
+.continued-sep::after{background:#E2E8F0;}
+
+
+
+.dr-ac{list-style:none;padding:0;margin:0;}.dr-ac li{display:flex;gap:8px;font-size:13px;color:#3A404B;padding:3px 0;align-items:flex-start;}.dr-ac li::before{content:"✓";color:#059669;font-weight:700;flex-shrink:0;font-size:12px;margin-top:1px;}
+
+.tab-bar{background:#fff;border-bottom:1.5px solid #E5E7EB;position:sticky;top:0;z-index:40;box-shadow:0 1px 5px rgba(0,0,0,.05);}
+.tab-bar-inner{max-width:1060px;margin:0 auto;display:flex;padding:0 14px;}
+.tab-btn{padding:13px 22px;border:none;border-bottom:3px solid transparent;background:transparent;font-size:13.5px;font-weight:600;color:#6B7280;cursor:pointer;font-family:inherit;transition:.15s;}
+.tab-btn:hover{color:#1A1D23;}.tab-btn.active{color:#1A1D23;border-bottom-color:#1A1D23;}
+.tab-panel{display:none;}.tab-panel.active{display:block;}
+.sl-wrap{max-width:1060px;margin:0 auto;padding:24px 14px 80px;}
+.sl-inner{border:2px solid #E5E7EB;border-radius:14px;overflow:hidden;background:#fff;}
+.sl-hdr{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:2px solid #E5E7EB;position:sticky;top:50px;z-index:30;background:#fff;}
+.sl-hdr-cell{padding:14px 10px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:4px;border-right:1.5px solid #E5E7EB;border-bottom:3px solid;font-weight:700;}
+.sl-hdr-cell:last-child{border-right:none;}.sl-hdr-icon{font-size:20px;}.sl-hdr-name{font-size:12.5px;font-weight:700;}
+.sl-body{padding:0;}
+.sl-flow-title{font-size:13px;font-weight:700;color:#fff;background:#1E293B;padding:10px 18px;border-top:1px solid #334155;}
+.sl-flow-title:first-child{border-top:none;}
+.sl-gap{height:6px;background:#F8FAFC;border-top:1px solid #F1F5F9;border-bottom:1px solid #F1F5F9;}
+.sl-row{display:grid;grid-template-columns:repeat(4,1fr);min-height:70px;border-bottom:1px solid #F1F5F9;}
+.sl-arrow-row{display:grid;grid-template-columns:repeat(4,1fr);height:28px;border-bottom:1px solid #F1F5F9;}
+.sl-down-row{display:grid;grid-template-columns:repeat(4,1fr);height:24px;border-bottom:1px solid #F1F5F9;}
+.sl-cell{position:relative;display:flex;align-items:center;justify-content:center;padding:10px 8px;border-right:1.5px dashed #D1D5DB;}
+.sl-cell:last-child{border-right:none;}.sl-arrow-row .sl-cell,.sl-down-row .sl-cell{padding:0;}
+.sl-vline{position:absolute;left:50%;top:0;bottom:0;border-left:1.5px dashed #D1D5DB;transform:translateX(-50%);z-index:0;pointer-events:none;}
+.sl-cell-node .sl-vline{border-left-color:var(--ac);border-left-style:solid;opacity:.3;}
+.sl-box{position:relative;z-index:2;border:2px solid;border-radius:10px;padding:9px 12px;font-size:12.5px;font-weight:600;color:#1A1D23;line-height:1.4;text-align:center;width:calc(100% - 12px);box-shadow:0 2px 8px rgba(0,0,0,.07);cursor:pointer;transition:.15s;}
+.sl-box:hover{transform:translateY(-2px);box-shadow:0 5px 16px rgba(0,0,0,.13);}
+.sl-down-cell{justify-content:center;}
+.sl-down-line{position:absolute;left:50%;top:0;bottom:0;border-left:2px solid var(--ac);transform:translateX(-50%);z-index:2;opacity:.6;}
+.sl-down-line::after{content:'\25BC';position:absolute;bottom:-2px;left:50%;transform:translateX(-50%);font-size:8px;color:var(--ac);line-height:1;}
+.sl-src::before,.sl-thru::before,.sl-dst::before{content:'';position:absolute;top:50%;height:2px;z-index:3;background:var(--ac);transform:translateY(-50%);}
+.sl-src-r::before{left:50%;right:0;}.sl-src-l::before{left:0;right:50%;}.sl-thru::before{left:0;right:0;}
+.sl-dst-l::before{left:0;right:50%;}.sl-dst-r::before{left:50%;right:0;}
+.sl-dst::after{content:'';position:absolute;left:50%;top:50%;bottom:0;border-left:2px solid var(--ac);transform:translateX(-50%);z-index:3;}
+.sl-arrow-row + .sl-row .sl-cell-node .sl-vline::before{content:'\25BC';position:absolute;top:-1px;left:50%;transform:translateX(-50%);font-size:8px;color:var(--ac);z-index:5;line-height:1;}
+
+</style></head><body>
+<div class="header"><div class="header-inner">
+  <div class="brand">&#9889; OneForAllPro</div>
+  <h1>Functional Flows &mdash; MVP</h1>
+  <span class="opt-tag">Journey Map &mdash; Each row is one interface, cards flow left to right, arrows show sequence</span>
+</div></div>
+<div class="tab-bar"><div class="tab-bar-inner"><button class="tab-btn active" onclick="switchTab('journey',this)">🗺 Journey Map</button><button class="tab-btn" onclick="switchTab('swimlane',this)">🔄 Cross-Actor Flow</button></div></div>
+<div class="content">
+<div id="tab-journey" class="tab-panel active">
+
+<div class="legend">
+  <span>Cards flow left → right, row by row. Each row continues below when it wraps.</span>
+  <span style="margin-left:auto;display:flex;gap:14px;align-items:center;flex-wrap:wrap;">
+    <span><span class="badge-out">&#8618;</span> Triggers another interface</span>
+    <span><span class="badge-in">&#8617;</span> Triggered by another</span>
+    <span style="color:#94A3B8;">Click any card for step-by-step detail</span>
+  </span>
+</div>
+<div class="map"><div class="map-row"><div class="lane-lbl" style="color:#2563EB;"><span class="lane-icon">📱</span><span class="lane-name">Customer<br>App</span><span class="lane-sub">click any card</span></div><div class="lane-cards"><div class="card-row"><div class="mcard" id="mcard-c1" onclick="openModal('c1')" style="border-color:#BFDBFE;"><div class="mcard-badges"></div><div class="mcard-icon">👤</div><div class="mcard-title">Register & Login</div></div><div class="flow-arrow" style="color:#2563EB;"></div><div class="mcard" id="mcard-c2" onclick="openModal('c2')" style="border-color:#BFDBFE;"><div class="mcard-badges"><span class="badge-in" title="Triggered by another interface">&#8617;</span></div><div class="mcard-icon">🏠</div><div class="mcard-title">Home & Browse</div></div><div class="flow-arrow" style="color:#2563EB;"></div><div class="mcard" id="mcard-c3" onclick="openModal('c3')" style="border-color:#BFDBFE;"><div class="mcard-badges"><span class="badge-out" title="Triggers another interface">&#8618;</span></div><div class="mcard-icon">🔧</div><div class="mcard-title">Create a Job</div></div><div class="flow-arrow" style="color:#2563EB;"></div><div class="mcard" id="mcard-c4" onclick="openModal('c4')" style="border-color:#BFDBFE;"><div class="mcard-badges"><span class="badge-out" title="Triggers another interface">&#8618;</span><span class="badge-in" title="Triggered by another interface">&#8617;</span></div><div class="mcard-icon">📍</div><div class="mcard-title">Monitor & Confirm</div></div></div><div class="row-sep continued-sep"><span>continued →</span></div><div class="card-row"><div class="mcard" id="mcard-c5" onclick="openModal('c5')" style="border-color:#BFDBFE;"><div class="mcard-badges"><span class="badge-out" title="Triggers another interface">&#8618;</span><span class="badge-in" title="Triggered by another interface">&#8617;</span></div><div class="mcard-icon">💳</div><div class="mcard-title">Pay Invoice</div></div><div class="flow-arrow" style="color:#2563EB;"></div><div class="mcard" id="mcard-c6" onclick="openModal('c6')" style="border-color:#BFDBFE;"><div class="mcard-badges"><span class="badge-out" title="Triggers another interface">&#8618;</span></div><div class="mcard-icon">⭐</div><div class="mcard-title">Rate & Dispute</div></div><div class="flow-arrow" style="color:#2563EB;"></div><div class="mcard" id="mcard-c_cancel" onclick="openModal('c_cancel')" style="border-color:#BFDBFE;"><div class="mcard-badges"><span class="badge-out" title="Triggers another interface">&#8618;</span><span class="badge-in" title="Triggered by another interface">&#8617;</span></div><div class="mcard-icon">🚫</div><div class="mcard-title">Cancel a Job</div></div><div class="flow-arrow" style="color:#2563EB;"></div><div class="mcard" id="mcard-c7" onclick="openModal('c7')" style="border-color:#BFDBFE;"><div class="mcard-badges"></div><div class="mcard-icon">🪪</div><div class="mcard-title">Profile</div></div></div><div class="row-sep continued-sep"><span>continued →</span></div><div class="card-row"><div class="mcard" id="mcard-c_notif" onclick="openModal('c_notif')" style="border-color:#BFDBFE;"><div class="mcard-badges"><span class="badge-in" title="Triggered by another interface">&#8617;</span></div><div class="mcard-icon">🔔</div><div class="mcard-title">Notifications</div></div></div></div></div><div class="map-row"><div class="lane-lbl" style="color:#059669;"><span class="lane-icon">🔧</span><span class="lane-name">Provider<br>App</span><span class="lane-sub">click any card</span></div><div class="lane-cards"><div class="card-row"><div class="mcard" id="mcard-p1" onclick="openModal('p1')" style="border-color:#A7F3D0;"><div class="mcard-badges"><span class="badge-out" title="Triggers another interface">&#8618;</span><span class="badge-in" title="Triggered by another interface">&#8617;</span></div><div class="mcard-icon">📋</div><div class="mcard-title">Register & Onboard</div></div><div class="flow-arrow" style="color:#059669;"></div><div class="mcard" id="mcard-p2" onclick="openModal('p2')" style="border-color:#A7F3D0;"><div class="mcard-badges"><span class="badge-in" title="Triggered by another interface">&#8617;</span></div><div class="mcard-icon">🏠</div><div class="mcard-title">Go Online</div></div><div class="flow-arrow" style="color:#059669;"></div><div class="mcard" id="mcard-p3" onclick="openModal('p3')" style="border-color:#A7F3D0;"><div class="mcard-badges"><span class="badge-out" title="Triggers another interface">&#8618;</span><span class="badge-in" title="Triggered by another interface">&#8617;</span></div><div class="mcard-icon">📨</div><div class="mcard-title">Accept Jobs</div></div><div class="flow-arrow" style="color:#059669;"></div><div class="mcard" id="mcard-p4" onclick="openModal('p4')" style="border-color:#A7F3D0;"><div class="mcard-badges"><span class="badge-out" title="Triggers another interface">&#8618;</span><span class="badge-in" title="Triggered by another interface">&#8617;</span></div><div class="mcard-icon">⚙️</div><div class="mcard-title">Manage Job</div></div></div><div class="row-sep continued-sep"><span>continued →</span></div><div class="card-row"><div class="mcard" id="mcard-p5" onclick="openModal('p5')" style="border-color:#A7F3D0;"><div class="mcard-badges"><span class="badge-out" title="Triggers another interface">&#8618;</span><span class="badge-in" title="Triggered by another interface">&#8617;</span></div><div class="mcard-icon">🧾</div><div class="mcard-title">Invoice & Get Paid</div></div><div class="flow-arrow" style="color:#059669;"></div><div class="mcard" id="mcard-p6" onclick="openModal('p6')" style="border-color:#A7F3D0;"><div class="mcard-badges"></div><div class="mcard-icon">💎</div><div class="mcard-title">Subscription</div></div><div class="flow-arrow" style="color:#059669;"></div><div class="mcard" id="mcard-p_services" onclick="openModal('p_services')" style="border-color:#A7F3D0;"><div class="mcard-badges"></div><div class="mcard-icon">🗂️</div><div class="mcard-title">Manage Services</div></div><div class="flow-arrow" style="color:#059669;"></div><div class="mcard" id="mcard-p_profile" onclick="openModal('p_profile')" style="border-color:#A7F3D0;"><div class="mcard-badges"></div><div class="mcard-icon">👤</div><div class="mcard-title">Profile & Account</div></div></div></div></div><div class="map-row"><div class="lane-lbl" style="color:#7C3AED;"><span class="lane-icon">🖥</span><span class="lane-name">Admin<br>Panel</span><span class="lane-sub">click any card</span></div><div class="lane-cards"><div class="card-row"><div class="mcard" id="mcard-a1" onclick="openModal('a1')" style="border-color:#DDD6FE;"><div class="mcard-badges"></div><div class="mcard-icon">🔐</div><div class="mcard-title">Login & Security</div></div><div class="flow-arrow" style="color:#7C3AED;"></div><div class="mcard" id="mcard-a2" onclick="openModal('a2')" style="border-color:#DDD6FE;"><div class="mcard-badges"><span class="badge-out" title="Triggers another interface">&#8618;</span></div><div class="mcard-icon">📊</div><div class="mcard-title">Dashboard</div></div><div class="flow-arrow" style="color:#7C3AED;"></div><div class="mcard" id="mcard-a3" onclick="openModal('a3')" style="border-color:#DDD6FE;"><div class="mcard-badges"></div><div class="mcard-icon">👥</div><div class="mcard-title">Customers</div></div><div class="flow-arrow" style="color:#7C3AED;"></div><div class="mcard" id="mcard-a4" onclick="openModal('a4')" style="border-color:#DDD6FE;"><div class="mcard-badges"><span class="badge-out" title="Triggers another interface">&#8618;</span><span class="badge-in" title="Triggered by another interface">&#8617;</span></div><div class="mcard-icon">🔩</div><div class="mcard-title">Provider Mgmt</div></div></div><div class="row-sep continued-sep"><span>continued →</span></div><div class="card-row"><div class="mcard" id="mcard-a5" onclick="openModal('a5')" style="border-color:#DDD6FE;"><div class="mcard-badges"></div><div class="mcard-icon">📁</div><div class="mcard-title">Job Management</div></div><div class="flow-arrow" style="color:#7C3AED;"></div><div class="mcard" id="mcard-a6" onclick="openModal('a6')" style="border-color:#DDD6FE;"><div class="mcard-badges"><span class="badge-out" title="Triggers another interface">&#8618;</span><span class="badge-in" title="Triggered by another interface">&#8617;</span></div><div class="mcard-icon">⚖️</div><div class="mcard-title">Disputes</div></div><div class="flow-arrow" style="color:#7C3AED;"></div><div class="mcard" id="mcard-a7" onclick="openModal('a7')" style="border-color:#DDD6FE;"><div class="mcard-badges"><span class="badge-out" title="Triggers another interface">&#8618;</span></div><div class="mcard-icon">🗂</div><div class="mcard-title">Categories</div></div><div class="flow-arrow" style="color:#7C3AED;"></div><div class="mcard" id="mcard-a_rules" onclick="openModal('a_rules')" style="border-color:#DDD6FE;"><div class="mcard-badges"><span class="badge-out" title="Triggers another interface">&#8618;</span></div><div class="mcard-icon">⚙️</div><div class="mcard-title">Configure Rules</div></div></div><div class="row-sep continued-sep"><span>continued →</span></div><div class="card-row"><div class="mcard" id="mcard-a_ratings" onclick="openModal('a_ratings')" style="border-color:#DDD6FE;"><div class="mcard-badges"></div><div class="mcard-icon">⭐</div><div class="mcard-title">Ratings & Reviews</div></div><div class="flow-arrow" style="color:#7C3AED;"></div><div class="mcard" id="mcard-a_profile" onclick="openModal('a_profile')" style="border-color:#DDD6FE;"><div class="mcard-badges"></div><div class="mcard-icon">🔐</div><div class="mcard-title">Admin Profile</div></div></div></div></div></div>
+</div>
+<div id="tab-swimlane" class="tab-panel" style="display:none;">
+<div class="sl-wrap"><div class="sl-inner"><div class="sl-hdr"><div class="sl-hdr-cell" style="background:#EFF6FF;border-bottom-color:#2563EB;color:#2563EB;"><span class="sl-hdr-icon">📱</span><span class="sl-hdr-name">Customer</span></div><div class="sl-hdr-cell" style="background:#ECFDF5;border-bottom-color:#059669;color:#059669;"><span class="sl-hdr-icon">🔧</span><span class="sl-hdr-name">Provider</span></div><div class="sl-hdr-cell" style="background:#F5F3FF;border-bottom-color:#7C3AED;color:#7C3AED;"><span class="sl-hdr-icon">🖥</span><span class="sl-hdr-name">Admin</span></div><div class="sl-hdr-cell" style="background:#F3F4F6;border-bottom-color:#4B5563;color:#4B5563;"><span class="sl-hdr-icon">⚙️</span><span class="sl-hdr-name">System</span></div></div><div class="sl-body"><div class="sl-flow-title">1 · Provider Gets Verified</div><div class="sl-row"><div class="sl-cell"><div class="sl-vline"></div></div><div class="sl-cell sl-cell-node" style="--ac:#059669;"><div class="sl-vline"></div><div class="sl-box" onclick="openModal('p1')" style="background:#ECFDF5;border-color:#059669;">Registers & uploads docs</div></div><div class="sl-cell"><div class="sl-vline"></div></div><div class="sl-cell"><div class="sl-vline"></div></div></div><div class="sl-arrow-row"><div class="sl-cell"><div class="sl-vline"></div></div><div class="sl-cell sl-src sl-src-r" style="--ac:#059669;"></div><div class="sl-cell sl-dst sl-dst-l sl-dr" style="--ac:#059669;"></div><div class="sl-cell"><div class="sl-vline"></div></div></div><div class="sl-row"><div class="sl-cell"><div class="sl-vline"></div></div><div class="sl-cell"><div class="sl-vline"></div></div><div class="sl-cell sl-cell-node" style="--ac:#7C3AED;"><div class="sl-vline"></div><div class="sl-box" onclick="openModal('a4')" style="background:#F5F3FF;border-color:#7C3AED;">Reviews & approves provider</div></div><div class="sl-cell"><div class="sl-vline"></div></div></div><div class="sl-arrow-row"><div class="sl-cell"><div class="sl-vline"></div></div><div class="sl-cell sl-dst sl-dst-r sl-dl" style="--ac:#7C3AED;"></div><div class="sl-cell sl-src sl-src-l" style="--ac:#7C3AED;"></div><div class="sl-cell"><div class="sl-vline"></div></div></div><div class="sl-row"><div class="sl-cell"><div class="sl-vline"></div></div><div class="sl-cell sl-cell-node" style="--ac:#059669;"><div class="sl-vline"></div><div class="sl-box" onclick="openModal('p1')" style="background:#ECFDF5;border-color:#059669;">Verified — ready to take jobs</div></div><div class="sl-cell"><div class="sl-vline"></div></div><div class="sl-cell"><div class="sl-vline"></div></div></div><div class="sl-gap"></div><div class="sl-flow-title">2 · Customer Creates a Job</div><div class="sl-row"><div class="sl-cell sl-cell-node" style="--ac:#2563EB;"><div class="sl-vline"></div><div class="sl-box" onclick="openModal('c3')" style="background:#EFF6FF;border-color:#2563EB;">Describes problem & sets urgency</div></div><div class="sl-cell"><div class="sl-vline"></div></div><div class="sl-cell"><div class="sl-vline"></div></div><div class="sl-cell"><div class="sl-vline"></div></div></div><div class="sl-arrow-row"><div class="sl-cell sl-src sl-src-r" style="--ac:#2563EB;"></div><div class="sl-cell sl-thru" style="--ac:#2563EB;"></div><div class="sl-cell sl-thru" style="--ac:#2563EB;"></div><div class="sl-cell sl-dst sl-dst-l sl-dr" style="--ac:#2563EB;"></div></div><div class="sl-row"><div class="sl-cell"><div class="sl-vline"></div></div><div class="sl-cell"><div class="sl-vline"></div></div><div class="sl-cell"><div class="sl-vline"></div></div><div class="sl-cell sl-cell-node" style="--ac:#4B5563;"><div class="sl-vline"></div><div class="sl-box" style="background:#F3F4F6;border-color:#4B5563;">Broadcasts to nearby providers</div></div></div><div class="sl-arrow-row"><div class="sl-cell"><div class="sl-vline"></div></div><div class="sl-cell sl-dst sl-dst-r sl-dl" style="--ac:#4B5563;"></div><div class="sl-cell sl-thru" style="--ac:#4B5563;"></div><div class="sl-cell sl-src sl-src-l" style="--ac:#4B5563;"></div></div><div class="sl-row"><div class="sl-cell"><div class="sl-vline"></div></div><div class="sl-cell sl-cell-node" style="--ac:#059669;"><div class="sl-vline"></div><div class="sl-box" onclick="openModal('p3')" style="background:#ECFDF5;border-color:#059669;">Receives alert & submits quote</div></div><div class="sl-cell"><div class="sl-vline"></div></div><div class="sl-cell"><div class="sl-vline"></div></div></div><div class="sl-arrow-row"><div class="sl-cell sl-dst sl-dst-r sl-dl" style="--ac:#059669;"></div><div class="sl-cell sl-src sl-src-l" style="--ac:#059669;"></div><div class="sl-cell"><div class="sl-vline"></div></div><div class="sl-cell"><div class="sl-vline"></div></div></div><div class="sl-row"><div class="sl-cell sl-cell-node" style="--ac:#2563EB;"><div class="sl-vline"></div><div class="sl-box" onclick="openModal('c4')" style="background:#EFF6FF;border-color:#2563EB;">Reviews quotes & confirms provider</div></div><div class="sl-cell"><div class="sl-vline"></div></div><div class="sl-cell"><div class="sl-vline"></div></div><div class="sl-cell"><div class="sl-vline"></div></div></div><div class="sl-arrow-row"><div class="sl-cell sl-src sl-src-r" style="--ac:#2563EB;"></div><div class="sl-cell sl-thru" style="--ac:#2563EB;"></div><div class="sl-cell sl-thru" style="--ac:#2563EB;"></div><div class="sl-cell sl-dst sl-dst-l sl-dr" style="--ac:#2563EB;"></div></div><div class="sl-row"><div class="sl-cell"><div class="sl-vline"></div></div><div class="sl-cell"><div class="sl-vline"></div></div><div class="sl-cell"><div class="sl-vline"></div></div><div class="sl-cell sl-cell-node" style="--ac:#4B5563;"><div class="sl-vline"></div><div class="sl-box" style="background:#F3F4F6;border-color:#4B5563;">Holds visiting fee in escrow</div></div></div><div class="sl-arrow-row"><div class="sl-cell"><div class="sl-vline"></div></div><div class="sl-cell sl-dst sl-dst-r sl-dl" style="--ac:#4B5563;"></div><div class="sl-cell sl-thru" style="--ac:#4B5563;"></div><div class="sl-cell sl-src sl-src-l" style="--ac:#4B5563;"></div></div><div class="sl-row"><div class="sl-cell"><div class="sl-vline"></div></div><div class="sl-cell sl-cell-node" style="--ac:#059669;"><div class="sl-vline"></div><div class="sl-box" onclick="openModal('p4')" style="background:#ECFDF5;border-color:#059669;">Job confirmed — heads to site</div></div><div class="sl-cell"><div class="sl-vline"></div></div><div class="sl-cell"><div class="sl-vline"></div></div></div><div class="sl-gap"></div><div class="sl-flow-title">3 · Provider Does the Work</div><div class="sl-row"><div class="sl-cell"><div class="sl-vline"></div></div><div class="sl-cell sl-cell-node" style="--ac:#059669;"><div class="sl-vline"></div><div class="sl-box" onclick="openModal('p4')" style="background:#ECFDF5;border-color:#059669;">Travels to customer location</div></div><div class="sl-cell"><div class="sl-vline"></div></div><div class="sl-cell"><div class="sl-vline"></div></div></div><div class="sl-arrow-row"><div class="sl-cell"><div class="sl-vline"></div></div><div class="sl-cell sl-src sl-src-r" style="--ac:#059669;"></div><div class="sl-cell sl-thru" style="--ac:#059669;"></div><div class="sl-cell sl-dst sl-dst-l sl-dr" style="--ac:#059669;"></div></div><div class="sl-row"><div class="sl-cell"><div class="sl-vline"></div></div><div class="sl-cell"><div class="sl-vline"></div></div><div class="sl-cell"><div class="sl-vline"></div></div><div class="sl-cell sl-cell-node" style="--ac:#4B5563;"><div class="sl-vline"></div><div class="sl-box" style="background:#F3F4F6;border-color:#4B5563;">Sends live ETA updates</div></div></div><div class="sl-arrow-row"><div class="sl-cell sl-dst sl-dst-r sl-dl" style="--ac:#4B5563;"></div><div class="sl-cell sl-thru" style="--ac:#4B5563;"></div><div class="sl-cell sl-thru" style="--ac:#4B5563;"></div><div class="sl-cell sl-src sl-src-l" style="--ac:#4B5563;"></div></div><div class="sl-row"><div class="sl-cell sl-cell-node" style="--ac:#2563EB;"><div class="sl-vline"></div><div class="sl-box" onclick="openModal('c4')" style="background:#EFF6FF;border-color:#2563EB;">Tracks provider arrival</div></div><div class="sl-cell"><div class="sl-vline"></div></div><div class="sl-cell"><div class="sl-vline"></div></div><div class="sl-cell"><div class="sl-vline"></div></div></div><div class="sl-down-row"><div class="sl-cell sl-down-cell" style="--ac:#2563EB;"><div class="sl-down-line"></div></div><div class="sl-cell"><div class="sl-vline"></div></div><div class="sl-cell"><div class="sl-vline"></div></div><div class="sl-cell"><div class="sl-vline"></div></div></div><div class="sl-row"><div class="sl-cell"><div class="sl-vline"></div></div><div class="sl-cell sl-cell-node" style="--ac:#059669;"><div class="sl-vline"></div><div class="sl-box" onclick="openModal('p4')" style="background:#ECFDF5;border-color:#059669;">Completes job on site</div></div><div class="sl-cell"><div class="sl-vline"></div></div><div class="sl-cell"><div class="sl-vline"></div></div></div><div class="sl-gap"></div><div class="sl-flow-title">4 · Payment & Reviews</div><div class="sl-row"><div class="sl-cell"><div class="sl-vline"></div></div><div class="sl-cell sl-cell-node" style="--ac:#059669;"><div class="sl-vline"></div><div class="sl-box" onclick="openModal('p5')" style="background:#ECFDF5;border-color:#059669;">Sends invoice to customer</div></div><div class="sl-cell"><div class="sl-vline"></div></div><div class="sl-cell"><div class="sl-vline"></div></div></div><div class="sl-arrow-row"><div class="sl-cell sl-dst sl-dst-r sl-dl" style="--ac:#059669;"></div><div class="sl-cell sl-src sl-src-l" style="--ac:#059669;"></div><div class="sl-cell"><div class="sl-vline"></div></div><div class="sl-cell"><div class="sl-vline"></div></div></div><div class="sl-row"><div class="sl-cell sl-cell-node" style="--ac:#2563EB;"><div class="sl-vline"></div><div class="sl-box" onclick="openModal('c5')" style="background:#EFF6FF;border-color:#2563EB;">Pays invoice in-app</div></div><div class="sl-cell"><div class="sl-vline"></div></div><div class="sl-cell"><div class="sl-vline"></div></div><div class="sl-cell"><div class="sl-vline"></div></div></div><div class="sl-arrow-row"><div class="sl-cell sl-src sl-src-r" style="--ac:#2563EB;"></div><div class="sl-cell sl-thru" style="--ac:#2563EB;"></div><div class="sl-cell sl-thru" style="--ac:#2563EB;"></div><div class="sl-cell sl-dst sl-dst-l sl-dr" style="--ac:#2563EB;"></div></div><div class="sl-row"><div class="sl-cell"><div class="sl-vline"></div></div><div class="sl-cell"><div class="sl-vline"></div></div><div class="sl-cell"><div class="sl-vline"></div></div><div class="sl-cell sl-cell-node" style="--ac:#4B5563;"><div class="sl-vline"></div><div class="sl-box" style="background:#F3F4F6;border-color:#4B5563;">Releases payment to provider</div></div></div><div class="sl-arrow-row"><div class="sl-cell"><div class="sl-vline"></div></div><div class="sl-cell sl-dst sl-dst-r sl-dl" style="--ac:#4B5563;"></div><div class="sl-cell sl-thru" style="--ac:#4B5563;"></div><div class="sl-cell sl-src sl-src-l" style="--ac:#4B5563;"></div></div><div class="sl-row"><div class="sl-cell"><div class="sl-vline"></div></div><div class="sl-cell sl-cell-node" style="--ac:#059669;"><div class="sl-vline"></div><div class="sl-box" onclick="openModal('p5')" style="background:#ECFDF5;border-color:#059669;">Payout received</div></div><div class="sl-cell"><div class="sl-vline"></div></div><div class="sl-cell"><div class="sl-vline"></div></div></div><div class="sl-down-row"><div class="sl-cell"><div class="sl-vline"></div></div><div class="sl-cell sl-down-cell" style="--ac:#059669;"><div class="sl-down-line"></div></div><div class="sl-cell"><div class="sl-vline"></div></div><div class="sl-cell"><div class="sl-vline"></div></div></div><div class="sl-row"><div class="sl-cell sl-cell-node" style="--ac:#2563EB;"><div class="sl-vline"></div><div class="sl-box" onclick="openModal('c6')" style="background:#EFF6FF;border-color:#2563EB;">Leaves rating & review</div></div><div class="sl-cell"><div class="sl-vline"></div></div><div class="sl-cell"><div class="sl-vline"></div></div><div class="sl-cell"><div class="sl-vline"></div></div></div><div class="sl-gap"></div><div class="sl-flow-title">5 · Dispute (if any)</div><div class="sl-row"><div class="sl-cell sl-cell-node" style="--ac:#2563EB;"><div class="sl-vline"></div><div class="sl-box" onclick="openModal('c6')" style="background:#EFF6FF;border-color:#2563EB;">Raises dispute with evidence</div></div><div class="sl-cell"><div class="sl-vline"></div></div><div class="sl-cell"><div class="sl-vline"></div></div><div class="sl-cell"><div class="sl-vline"></div></div></div><div class="sl-arrow-row"><div class="sl-cell sl-src sl-src-r" style="--ac:#2563EB;"></div><div class="sl-cell sl-thru" style="--ac:#2563EB;"></div><div class="sl-cell sl-dst sl-dst-l sl-dr" style="--ac:#2563EB;"></div><div class="sl-cell"><div class="sl-vline"></div></div></div><div class="sl-row"><div class="sl-cell"><div class="sl-vline"></div></div><div class="sl-cell"><div class="sl-vline"></div></div><div class="sl-cell sl-cell-node" style="--ac:#7C3AED;"><div class="sl-vline"></div><div class="sl-box" onclick="openModal('a6')" style="background:#F5F3FF;border-color:#7C3AED;">Reviews both sides & decides</div></div><div class="sl-cell"><div class="sl-vline"></div></div></div><div class="sl-arrow-row"><div class="sl-cell"><div class="sl-vline"></div></div><div class="sl-cell"><div class="sl-vline"></div></div><div class="sl-cell sl-src sl-src-r" style="--ac:#7C3AED;"></div><div class="sl-cell sl-dst sl-dst-l sl-dr" style="--ac:#7C3AED;"></div></div><div class="sl-row"><div class="sl-cell"><div class="sl-vline"></div></div><div class="sl-cell"><div class="sl-vline"></div></div><div class="sl-cell"><div class="sl-vline"></div></div><div class="sl-cell sl-cell-node" style="--ac:#4B5563;"><div class="sl-vline"></div><div class="sl-box" style="background:#F3F4F6;border-color:#4B5563;">Processes refund if approved</div></div></div><div class="sl-arrow-row"><div class="sl-cell sl-dst sl-dst-r sl-dl" style="--ac:#4B5563;"></div><div class="sl-cell sl-thru" style="--ac:#4B5563;"></div><div class="sl-cell sl-thru" style="--ac:#4B5563;"></div><div class="sl-cell sl-src sl-src-l" style="--ac:#4B5563;"></div></div><div class="sl-row"><div class="sl-cell sl-cell-node" style="--ac:#2563EB;"><div class="sl-vline"></div><div class="sl-box" onclick="openModal('c6')" style="background:#EFF6FF;border-color:#2563EB;">Dispute resolved</div></div><div class="sl-cell"><div class="sl-vline"></div></div><div class="sl-cell"><div class="sl-vline"></div></div><div class="sl-cell"><div class="sl-vline"></div></div></div><div class="sl-gap"></div><div class="sl-flow-title">6 · Platform Rules</div><div class="sl-row"><div class="sl-cell"><div class="sl-vline"></div></div><div class="sl-cell"><div class="sl-vline"></div></div><div class="sl-cell sl-cell-node" style="--ac:#7C3AED;"><div class="sl-vline"></div><div class="sl-box" onclick="openModal('a_rules')" style="background:#F5F3FF;border-color:#7C3AED;">Sets commission & dispatch rules</div></div><div class="sl-cell"><div class="sl-vline"></div></div></div><div class="sl-arrow-row"><div class="sl-cell"><div class="sl-vline"></div></div><div class="sl-cell"><div class="sl-vline"></div></div><div class="sl-cell sl-src sl-src-r" style="--ac:#7C3AED;"></div><div class="sl-cell sl-dst sl-dst-l sl-dr" style="--ac:#7C3AED;"></div></div><div class="sl-row"><div class="sl-cell"><div class="sl-vline"></div></div><div class="sl-cell"><div class="sl-vline"></div></div><div class="sl-cell"><div class="sl-vline"></div></div><div class="sl-cell sl-cell-node" style="--ac:#4B5563;"><div class="sl-vline"></div><div class="sl-box" onclick="openModal('a_rules')" style="background:#F3F4F6;border-color:#4B5563;">Applies rules to every job</div></div></div><div class="sl-gap"></div></div></div></div>
+</div>
+</div>
+<div class="overlay" id="overlay" onclick="if(event.target===this)closeModal()">
+<div class="modal" id="modal-c1" data-next="c2" style="display:none;"><div class="modal-inner"><div class="modal-top" style="background:#EFF6FF;border-bottom:2px solid #BFDBFE;"><div class="modal-ttl"><span class="mt-icon">👤</span><div><div class="mt-iface" style="color:#2563EB;">📱 Customer App</div><div class="mt-title">Registration &amp; Login</div></div></div><button class="modal-close" onclick="closeModal()">&#x2715;</button></div><div class="modal-body"><div class="msteps"><div class="mstep" id="dst-c1-0"><div class="dnum" id="dnm-c1-0" style="background:#2563EB;color:#fff;">1</div><div class="dbody"><div class="dtxt" id="dtx-c1-0">Enter Full Name, Email &amp; Phone Number</div></div></div><div class="mstep " id="dst-c1-1"><div class="dnum" id="dnm-c1-1" style="background:#2563EB;color:#fff;">2</div><div class="dbody"><div class="dtxt" id="dtx-c1-1">Set Password + Confirm Password</div></div></div><div class="mstep " id="dst-c1-2"><div class="dnum" id="dnm-c1-2" style="background:#2563EB;color:#fff;">3</div><div class="dbody"><div class="dtxt" id="dtx-c1-2">Submit → OTP sent to Email</div></div></div><div class="mstep " id="dst-c1-3"><div class="dnum" id="dnm-c1-3" style="background:#2563EB;color:#fff;">4</div><div class="dbody"><div class="dtxt" id="dtx-c1-3">Enter OTP (timer &amp; Resend)</div></div></div><div class="mstep " id="dst-c1-4"><div class="dnum" id="dnm-c1-4" style="background:#2563EB;color:#fff;">5</div><div class="dbody"><div class="dtxt" id="dtx-c1-4">OTP Verified → Redirect to Home</div></div></div></div><div class="esec"><div class="esec-hdr"><span class="esec-ttl">&#10067; Questions &amp; Edge Cases</span><button class="addbtn" onclick="addEI(this)">+ Add</button></div><div class="elist"></div></div></div></div></div><div class="modal" id="modal-c2" data-next="c3" style="display:none;"><div class="modal-inner"><div class="modal-top" style="background:#EFF6FF;border-bottom:2px solid #BFDBFE;"><div class="modal-ttl"><span class="mt-icon">🏠</span><div><div class="mt-iface" style="color:#2563EB;">📱 Customer App</div><div class="mt-title">Home & Browse Services</div></div></div><button class="modal-close" onclick="closeModal()">&#x2715;</button></div><div class="modal-body"><div class="msteps"><div class="mstep"><div class="dnum" style="background:#2563EB;color:#fff;">1</div><div class="dbody"><div class="dtxt">Home Screen: Menu + Quick Actions</div></div></div><div class="mstep"><div class="dnum" style="background:#2563EB;color:#fff;">2</div><div class="dbody"><div class="dtxt">Have an Emergency? → Opens Native Phone Dialer (911) — button appears throughout the app</div></div></div><div class="mstep"><div class="dnum" style="background:#2563EB;color:#fff;">3</div><div class="dbody"><div class="dtxt">Browse Service Categories</div></div></div><div class="mstep"><div class="dnum" style="background:#2563EB;color:#fff;">4</div><div class="dbody"><div class="dtxt">Select Category → View Sub-Categories</div></div></div><div class="mstep"><div class="dnum" style="background:#2563EB;color:#fff;">5</div><div class="dbody"><div class="dtxt">View & Filter Providers Listing (all providers shown, sorted by distance by default; user can apply other sorts)</div></div></div><div class="mstep"><div class="dnum" style="background:#2563EB;color:#fff;">6</div><div class="dbody"><div class="dtxt">Open Provider Profile → View Details</div></div></div><div class="mstep"><div class="dnum" style="background:#2563EB;color:#fff;">7</div><div class="dbody"><div class="dtxt">Favourite / Unfavourite Provider (favourites shown in a separate tab, not used for dispatch priority)</div></div></div><div class="mstep"><div class="dnum" style="background:#2563EB;color:#fff;">8</div><div class="dbody"><div class="dtxt">Rebook a Provider for the same job directly from their profile</div></div></div></div><div class="esec"><div class="esec-hdr"><span class="esec-ttl">&#10067; Questions &amp; Edge Cases</span><button class="addbtn" onclick="addEI(this)">+ Add</button></div><div class="elist"></div></div></div></div></div><div class="modal" id="modal-c3" data-next="c4" style="display:none;"><div class="modal-inner"><div class="modal-top" style="background:#EFF6FF;border-bottom:2px solid #BFDBFE;"><div class="modal-ttl"><span class="mt-icon">🔧</span><div><div class="mt-iface" style="color:#2563EB;">📱 Customer App</div><div class="mt-title">Create a Job Request</div></div></div><button class="modal-close" onclick="closeModal()">&#x2715;</button></div><div class="modal-body"><div class="msteps"><div class="mstep"><div class="dnum" style="background:#2563EB;color:#fff;">1</div><div class="dbody"><div class="dtxt">Tap 'Create Job'</div></div></div><div class="mstep"><div class="dnum" style="background:#2563EB;color:#fff;">2</div><div class="dbody"><div class="dtxt">Select Service Category</div></div></div><div class="mstep"><div class="dnum" style="background:#2563EB;color:#fff;">3</div><div class="dbody"><div class="dtxt">Enter Job Title + Description</div></div></div><div class="mstep"><div class="dnum" style="background:#2563EB;color:#fff;">4</div><div class="dbody"><div class="dtxt">Upload Photo(s) / Video — Optional</div></div></div><div class="mstep"><div class="dnum" style="background:#2563EB;color:#fff;">5</div><div class="dbody"><div class="dtxt">AI Suggests Sub-Categories → Customer selects one</div></div></div><div class="mstep"><div class="dnum" style="background:#2563EB;color:#fff;">6</div><div class="dbody"><div class="dtxt">Select Job Type: Emergency (View price for emergency) or Normal</div></div></div><div class="mstep"><div class="dnum" style="background:#2563EB;color:#fff;">7</div><div class="dbody"><div class="dtxt">View / Enter Primary Address</div></div></div><div class="mstep has-impact"><div class="dnum" style="background:#2563EB;color:#fff;">8</div><div class="dbody"><div class="dtxt">Confirm → Job broadcast to nearby providers</div><div class="pills-wrap"><span class="tpill" style="color:#059669;background:#ECFDF5;border-color:#A7F3D0;" onclick="openModal('p3')">&#8618; 📨 Provider receives job notification</span></div></div></div></div><div class="esec"><div class="esec-hdr"><span class="esec-ttl">&#10067; Questions &amp; Edge Cases</span><button class="addbtn" onclick="addEI(this)">+ Add</button></div><div class="elist"><div class="ei" contenteditable="true" spellcheck="false">Is video upload in MVP scope, or photo-only? (Gene expected video; Juan flagged cost — needs final decision)<button class="delbtn" onclick="this.parentNode.remove()">&#x2715;</button></div></div></div></div></div></div><div class="modal" id="modal-c4" data-next="c5" style="display:none;"><div class="modal-inner"><div class="modal-top" style="background:#EFF6FF;border-bottom:2px solid #BFDBFE;"><div class="modal-ttl"><span class="mt-icon">📍</span><div><div class="mt-iface" style="color:#2563EB;">📱 Customer App</div><div class="mt-title">Monitor Job & Select Provider</div></div></div><button class="modal-close" onclick="closeModal()">&#x2715;</button></div><div class="modal-body"><div class="msteps"><div class="mstep"><div class="dnum" style="background:#2563EB;color:#fff;">1</div><div class="dbody"><div class="dtxt">Job Listing: Active / All Jobs</div></div></div><div class="mstep"><div class="dnum" style="background:#2563EB;color:#fff;">2</div><div class="dbody"><div class="dtxt">Open Job Details</div></div></div><div class="mstep"><div class="dnum" style="background:#2563EB;color:#fff;">3</div><div class="dbody"><div class="dtxt">View Job Progress Bar</div></div></div><div class="mstep"><div class="dnum" style="background:#2563EB;color:#fff;">4</div><div class="dbody"><div class="dtxt">View Interested Providers + Their Offered Prices + Live Provider Status</div></div></div><div class="mstep has-impact"><div class="dnum" style="background:#2563EB;color:#fff;">5</div><div class="dbody"><div class="dtxt">Confirm Provider → Price deduction pop-up</div><div class="pills-wrap"><span class="tpill" style="color:#059669;background:#ECFDF5;border-color:#A7F3D0;" onclick="openModal('p4')">&#8618; ⚙️ Provider is notified they've been confirmed</span></div></div></div><div class="mstep"><div class="dnum" style="background:#2563EB;color:#fff;">6</div><div class="dbody"><div class="dtxt">Track Provider Location & Estimated Arrival</div></div></div><div class="mstep has-impact"><div class="dnum" style="background:#2563EB;color:#fff;">7</div><div class="dbody"><div class="dtxt">Cancel Job (only allowed within the defined cancellation window)</div><div class="pills-wrap"><span class="tpill" style="color:#059669;background:#ECFDF5;border-color:#A7F3D0;" onclick="openModal('p4')">&#8618; ⚙️ Provider notified of cancellation</span></div></div></div><div class="mstep"><div class="dnum" style="background:#2563EB;color:#fff;">8</div><div class="dbody"><div class="dtxt">Customer receives push notification when provider accepts and when confirmed</div></div></div></div><div class="esec"><div class="esec-hdr"><span class="esec-ttl">&#10067; Questions &amp; Edge Cases</span><button class="addbtn" onclick="addEI(this)">+ Add</button></div><div class="elist"><div class="ei" contenteditable="true" spellcheck="false">Is there a time limit for the customer to confirm a provider from the interested list? (e.g. list expires after X minutes)<button class="delbtn" onclick="this.parentNode.remove()">&#x2715;</button></div><div class="ei" contenteditable="true" spellcheck="false">OPEN — Cancel job rules: to be agreed (see Cancel a Job modal for full cancellation policy discussion)<button class="delbtn" onclick="this.parentNode.remove()">&#x2715;</button></div></div></div></div></div></div><div class="modal" id="modal-c5" data-next="c6" style="display:none;"><div class="modal-inner"><div class="modal-top" style="background:#EFF6FF;border-bottom:2px solid #BFDBFE;"><div class="modal-ttl"><span class="mt-icon">💳</span><div><div class="mt-iface" style="color:#2563EB;">📱 Customer App</div><div class="mt-title">Payments & Invoices</div></div></div><button class="modal-close" onclick="closeModal()">&#x2715;</button></div><div class="modal-body"><div class="msteps"><div class="mstep"><div class="dnum" style="background:#2563EB;color:#fff;">1</div><div class="dbody"><div class="dtxt">Receive Invoice notification from Provider</div></div></div><div class="mstep"><div class="dnum" style="background:#2563EB;color:#fff;">2</div><div class="dbody"><div class="dtxt">View Pending / All Invoices</div></div></div><div class="mstep"><div class="dnum" style="background:#2563EB;color:#fff;">3</div><div class="dbody"><div class="dtxt">Open Invoice Details</div></div></div><div class="mstep"><div class="dnum" style="background:#2563EB;color:#fff;">4</div><div class="dbody"><div class="dtxt">Confirm Payment → Checkout (Stripe)</div></div></div><div class="mstep has-impact"><div class="dnum" style="background:#2563EB;color:#fff;">5</div><div class="dbody"><div class="dtxt">Platform deducts commission → Escrow → Released to Provider</div><div class="pills-wrap"><span class="tpill" style="color:#059669;background:#ECFDF5;border-color:#A7F3D0;" onclick="openModal('p5')">&#8618; 🧾 Provider receives payment release</span></div></div></div></div><div class="esec"><div class="esec-hdr"><span class="esec-ttl">&#10067; Questions &amp; Edge Cases</span><button class="addbtn" onclick="addEI(this)">+ Add</button></div><div class="elist"><div class="ei" contenteditable="true" spellcheck="false">Is there a time limit for the customer to pay an invoice before it expires?<button class="delbtn" onclick="this.parentNode.remove()">&#x2715;</button></div></div></div></div></div></div><div class="modal" id="modal-c6" data-next="c7" style="display:none;"><div class="modal-inner"><div class="modal-top" style="background:#EFF6FF;border-bottom:2px solid #BFDBFE;"><div class="modal-ttl"><span class="mt-icon">⭐</span><div><div class="mt-iface" style="color:#2563EB;">📱 Customer App</div><div class="mt-title">Ratings, Reviews & Disputes</div></div></div><button class="modal-close" onclick="closeModal()">&#x2715;</button></div><div class="modal-body"><div class="msteps"><div class="mstep"><div class="dnum" style="background:#2563EB;color:#fff;">1</div><div class="dbody"><div class="dtxt">After Job Completed → Optional prompt to Add Rating & Review (skippable)</div></div></div><div class="mstep"><div class="dnum" style="background:#2563EB;color:#fff;">2</div><div class="dbody"><div class="dtxt">Select Star Rating (1–5) + Enter Review (minimum 3 characters)</div></div></div><div class="mstep"><div class="dnum" style="background:#2563EB;color:#fff;">3</div><div class="dbody"><div class="dtxt">Save → View own Reviews & Edit/Delete</div></div></div><div class="mstep"><div class="dnum" style="background:#2563EB;color:#fff;">4</div><div class="dbody"><div class="dtxt">If issue: Open Dispute Wizard → Enter Reason + Upload Evidence</div></div></div><div class="mstep has-impact"><div class="dnum" style="background:#2563EB;color:#fff;">5</div><div class="dbody"><div class="dtxt">Submit Dispute</div><div class="pills-wrap"><span class="tpill" style="color:#7C3AED;background:#F5F3FF;border-color:#DDD6FE;" onclick="openModal('a6')">&#8618; ⚖️ Admin receives new dispute to review</span></div></div></div><div class="mstep"><div class="dnum" style="background:#2563EB;color:#fff;">6</div><div class="dbody"><div class="dtxt">Track Dispute Status</div></div></div><div class="mstep " id="dst-c6-6"><div class="dnum" id="dnm-c6-6" style="background:#2563EB;color:#fff;">7</div><div class="dbody"><div class="dtxt" id="dtx-c6-6">Rebook same provider for a new job (one-tap from completed job)</div></div></div></div><div class="esec"><div class="esec-hdr"><span class="esec-ttl">&#10067; Questions &amp; Edge Cases</span><button class="addbtn" onclick="addEI(this)">+ Add</button></div><div class="elist"></div></div></div></div></div><div class="modal" id="modal-c7" data-next="" style="display:none;"><div class="modal-inner"><div class="modal-top" style="background:#EFF6FF;border-bottom:2px solid #BFDBFE;"><div class="modal-ttl"><span class="mt-icon">🪪</span><div><div class="mt-iface" style="color:#2563EB;">📱 Customer App</div><div class="mt-title">Profile Management</div></div></div><button class="modal-close" onclick="closeModal()">&#x2715;</button></div><div class="modal-body"><div class="msteps"><div class="mstep" id="dst-c7-0"><div class="dnum" id="dnm-c7-0" style="background:#2563EB;color:#fff;">1</div><div class="dbody"><div class="dtxt" id="dtx-c7-0">View/Update Full Name &amp; Email</div></div></div><div class="mstep " id="dst-c7-1"><div class="dnum" id="dnm-c7-1" style="background:#2563EB;color:#fff;">2</div><div class="dbody"><div class="dtxt" id="dtx-c7-1">Add / Update / Delete Payment Card</div></div></div><div class="mstep " id="dst-c7-2"><div class="dnum" id="dnm-c7-2" style="background:#2563EB;color:#fff;">3</div><div class="dbody"><div class="dtxt" id="dtx-c7-2">Add / Update / Delete Primary Address</div></div></div><div class="mstep " id="dst-c7-3"><div class="dnum" id="dnm-c7-3" style="background:#2563EB;color:#fff;">4</div><div class="dbody"><div class="dtxt" id="dtx-c7-3">Upload / Update Profile Photo</div></div></div><div class="mstep " id="dst-c7-4"><div class="dnum" id="dnm-c7-4" style="background:#2563EB;color:#fff;">5</div><div class="dbody"><div class="dtxt" id="dtx-c7-4">Reset Password or Delete Account</div></div></div></div><div class="esec"><div class="esec-hdr"><span class="esec-ttl">&#10067; Questions &amp; Edge Cases</span><button class="addbtn" onclick="addEI(this)">+ Add</button></div><div class="elist"></div></div></div></div></div><div class="modal" id="modal-p1" data-next="p2" style="display:none;"><div class="modal-inner"><div class="modal-top" style="background:#ECFDF5;border-bottom:2px solid #A7F3D0;"><div class="modal-ttl"><span class="mt-icon">📋</span><div><div class="mt-iface" style="color:#059669;">🔧 Service Provider App</div><div class="mt-title">Registration &amp; Onboarding</div></div></div><button class="modal-close" onclick="closeModal()">&#x2715;</button></div><div class="modal-body"><div class="msteps"><div class="mstep" id="dst-p1-0"><div class="dnum" id="dnm-p1-0" style="background:#059669;color:#fff;">1</div><div class="dbody"><div class="dtxt" id="dtx-p1-0">Enter Full Name + Email → OTP Verification</div></div></div><div class="mstep " id="dst-p1-1"><div class="dnum" id="dnm-p1-1" style="background:#059669;color:#fff;">2</div><div class="dbody"><div class="dtxt" id="dtx-p1-1">Enter Onboarding Wizard</div></div></div><div class="mstep " id="dst-p1-2"><div class="dnum" id="dnm-p1-2" style="background:#059669;color:#fff;">3</div><div class="dbody"><div class="dtxt" id="dtx-p1-2">Select Service Category(ies) &amp; Sub-Categories</div></div></div><div class="mstep " id="dst-p1-3"><div class="dnum" id="dnm-p1-3" style="background:#059669;color:#fff;">4</div><div class="dbody"><div class="dtxt" id="dtx-p1-3">Enter Visiting Price Per Sub-Category</div></div></div><div class="mstep " id="dst-p1-4"><div class="dnum" id="dnm-p1-4" style="background:#059669;color:#fff;">5</div><div class="dbody"><div class="dtxt" id="dtx-p1-4">Upload License(s) per Sub-Category (PDF)</div></div></div><div class="mstep " id="dst-p1-5"><div class="dnum" id="dnm-p1-5" style="background:#059669;color:#fff;">6</div><div class="dbody"><div class="dtxt" id="dtx-p1-5">Upload Government ID (PDF)</div></div></div><div class="mstep " id="dst-p1-6"><div class="dnum" id="dnm-p1-6" style="background:#059669;color:#fff;">7</div><div class="dbody"><div class="dtxt" id="dtx-p1-6">Enter Location → Select from Map</div></div></div><div class="mstep has-impact" id="dst-p1-7"><div class="dnum" id="dnm-p1-7" style="background:#059669;color:#fff;">8</div><div class="dbody"><div class="dtxt" id="dtx-p1-7">Submit for Admin Review</div><div class="pills-wrap"><span class="tpill" style="border-color:#DDD6FE;background:#F5F3FF;color:#7C3AED;" onclick="jumpTo('a4')"><b>&#8618;</b> <b style="font-size:10px;text-transform:uppercase;letter-spacing:.4px;">Admin</b> · 🔩 Admin receives provider verification request</span></div></div></div><div class="mstep"><div class="dnum" style="background:#059669;color:#fff;">9</div><div class="dbody"><div class="dtxt">Login: Enter Email + Password → OTP → Redirect to Home (includes Forgot Password flow)</div></div></div></div><div class="esec"><div class="esec-hdr"><span class="esec-ttl">&#10067; Questions &amp; Edge Cases</span><button class="addbtn" onclick="addEI(this)">+ Add</button></div><div class="elist"><div class="ei" contenteditable="true" spellcheck="false">If a provider's license expires while a job is in progress, their account will be paused — they cannot receive new jobs until the license is renewed and re-verified.<button class="delbtn" onclick="this.parentNode.remove()">&#x2715;</button></div></div></div></div></div></div><div class="modal" id="modal-p2" data-next="p3" style="display:none;"><div class="modal-inner"><div class="modal-top" style="background:#ECFDF5;border-bottom:2px solid #A7F3D0;"><div class="modal-ttl"><span class="mt-icon">🏠</span><div><div class="mt-iface" style="color:#059669;">🔧 Service Provider App</div><div class="mt-title">Home &amp; Availability</div></div></div><button class="modal-close" onclick="closeModal()">&#x2715;</button></div><div class="modal-body"><div class="msteps"><div class="mstep" id="dst-p2-0"><div class="dnum" id="dnm-p2-0" style="background:#059669;color:#fff;">1</div><div class="dbody"><div class="dtxt" id="dtx-p2-0">Toggle Availability (Online / Offline)</div></div></div><div class="mstep " id="dst-p2-1"><div class="dnum" id="dnm-p2-1" style="background:#059669;color:#fff;">2</div><div class="dbody"><div class="dtxt" id="dtx-p2-1">View Incoming New Job Listing (shortcut)</div></div></div><div class="mstep " id="dst-p2-2"><div class="dnum" id="dnm-p2-2" style="background:#059669;color:#fff;">3</div><div class="dbody"><div class="dtxt" id="dtx-p2-2">Live Status updated on backend — visible to customers</div></div></div></div><div class="esec"><div class="esec-hdr"><span class="esec-ttl">&#10067; Questions &amp; Edge Cases</span><button class="addbtn" onclick="addEI(this)">+ Add</button></div><div class="elist"></div></div></div></div></div><div class="modal" id="modal-p3" data-next="p4" style="display:none;"><div class="modal-inner"><div class="modal-top" style="background:#ECFDF5;border-bottom:2px solid #A7F3D0;"><div class="modal-ttl"><span class="mt-icon">📨</span><div><div class="mt-iface" style="color:#059669;">🔧 Service Provider App</div><div class="mt-title">Receiving &amp; Accepting Jobs</div></div></div><button class="modal-close" onclick="closeModal()">&#x2715;</button></div><div class="modal-body"><div class="msteps"><div class="mstep" id="dst-p3-0"><div class="dnum" id="dnm-p3-0" style="background:#059669;color:#fff;">1</div><div class="dbody"><div class="dtxt" id="dtx-p3-0">Push notification for incoming job</div></div></div><div class="mstep " id="dst-p3-1"><div class="dnum" id="dnm-p3-1" style="background:#059669;color:#fff;">2</div><div class="dbody"><div class="dtxt" id="dtx-p3-1">View Incoming Jobs Listing with Timer</div></div></div><div class="mstep " id="dst-p3-2"><div class="dnum" id="dnm-p3-2" style="background:#059669;color:#fff;">3</div><div class="dbody"><div class="dtxt" id="dtx-p3-2">Open Job Details: Category, Description, Media, Location</div></div></div><div class="mstep has-impact" id="dst-p3-3"><div class="dnum" id="dnm-p3-3" style="background:#059669;color:#fff;">4</div><div class="dbody"><div class="dtxt" id="dtx-p3-3">Accept Job: Enter Full Price OR Continue with Visiting Price</div><div class="pills-wrap"><span class="tpill" style="border-color:#BFDBFE;background:#EFF6FF;color:#2563EB;" onclick="jumpTo('c4')"><b>&#8618;</b> <b style="font-size:10px;text-transform:uppercase;letter-spacing:.4px;">Customer</b> · 📍 Customer sees provider accepted — appears in interested list</span></div></div></div><div class="mstep " id="dst-p3-4"><div class="dnum" id="dnm-p3-4" style="background:#059669;color:#fff;">5</div><div class="dbody"><div class="dtxt" id="dtx-p3-4">Upon Acceptance: Open Google Maps for Navigation</div></div></div></div><div class="esec"><div class="esec-hdr"><span class="esec-ttl">&#10067; Questions &amp; Edge Cases</span><button class="addbtn" onclick="addEI(this)">+ Add</button></div><div class="elist"></div></div></div></div></div><div class="modal" id="modal-p4" data-next="p5" style="display:none;"><div class="modal-inner"><div class="modal-top" style="background:#ECFDF5;border-bottom:2px solid #A7F3D0;"><div class="modal-ttl"><span class="mt-icon">⚙️</span><div><div class="mt-iface" style="color:#059669;">🔧 Service Provider App</div><div class="mt-title">Managing an Active Job</div></div></div><button class="modal-close" onclick="closeModal()">&#x2715;</button></div><div class="modal-body"><div class="msteps"><div class="mstep" id="dst-p4-0"><div class="dnum" id="dnm-p4-0" style="background:#059669;color:#fff;">1</div><div class="dbody"><div class="dtxt" id="dtx-p4-0">Update Job Status (On the Way → Arrived → In Progress → Completed)</div></div></div><div class="mstep " id="dst-p4-1"><div class="dnum" id="dnm-p4-1" style="background:#059669;color:#fff;">2</div><div class="dbody"><div class="dtxt" id="dtx-p4-1">Add Helper (Enter username → Select from results)</div></div></div><div class="mstep " id="dst-p4-2"><div class="dnum" id="dnm-p4-2" style="background:#059669;color:#fff;">3</div><div class="dbody"><div class="dtxt" id="dtx-p4-2">View Customer Name, Photo, Service Details</div></div></div><div class="mstep has-impact" id="dst-p4-3"><div class="dnum" id="dnm-p4-3" style="background:#059669;color:#fff;">4</div><div class="dbody"><div class="dtxt" id="dtx-p4-3">Cancel Job Workflow (if needed)</div><div class="pills-wrap"><span class="tpill" style="border-color:#BFDBFE;background:#EFF6FF;color:#2563EB;" onclick="jumpTo('c4')"><b>&#8618;</b> <b style="font-size:10px;text-transform:uppercase;letter-spacing:.4px;">Customer</b> · 📍 Customer notified of cancellation — job may re-broadcast</span></div></div></div><div class="mstep " id="dst-p4-4"><div class="dnum" id="dnm-p4-4" style="background:#059669;color:#fff;">5</div><div class="dbody"><div class="dtxt" id="dtx-p4-4">On Completion → Redirect to Create Invoice</div></div></div></div><div class="esec"><div class="esec-hdr"><span class="esec-ttl">&#10067; Questions &amp; Edge Cases</span><button class="addbtn" onclick="addEI(this)">+ Add</button></div><div class="elist"></div></div></div></div></div><div class="modal" id="modal-p5" data-next="p6" style="display:none;"><div class="modal-inner"><div class="modal-top" style="background:#ECFDF5;border-bottom:2px solid #A7F3D0;"><div class="modal-ttl"><span class="mt-icon">🧾</span><div><div class="mt-iface" style="color:#059669;">🔧 Service Provider App</div><div class="mt-title">Create Invoice &amp; Receive Payment</div></div></div><button class="modal-close" onclick="closeModal()">&#x2715;</button></div><div class="modal-body"><div class="msteps"><div class="mstep" id="dst-p5-0"><div class="dnum" id="dnm-p5-0" style="background:#059669;color:#fff;">1</div><div class="dbody"><div class="dtxt" id="dtx-p5-0">Open Create Invoice Wizard</div></div></div><div class="mstep " id="dst-p5-1"><div class="dnum" id="dnm-p5-1" style="background:#059669;color:#fff;">2</div><div class="dbody"><div class="dtxt" id="dtx-p5-1">Enter Due Amount + Optional Reason</div></div></div><div class="mstep has-impact" id="dst-p5-2"><div class="dnum" id="dnm-p5-2" style="background:#059669;color:#fff;">3</div><div class="dbody"><div class="dtxt" id="dtx-p5-2">Save Invoice → Sent to Customer</div><div class="pills-wrap"><span class="tpill" style="border-color:#BFDBFE;background:#EFF6FF;color:#2563EB;" onclick="jumpTo('c5')"><b>&#8618;</b> <b style="font-size:10px;text-transform:uppercase;letter-spacing:.4px;">Customer</b> · 💳 Customer receives invoice notification &amp; pays</span></div></div></div><div class="mstep " id="dst-p5-3"><div class="dnum" id="dnm-p5-3" style="background:#059669;color:#fff;">4</div><div class="dbody"><div class="dtxt" id="dtx-p5-3">Customer pays → Escrow holds funds</div></div></div><div class="mstep " id="dst-p5-4"><div class="dnum" id="dnm-p5-4" style="background:#059669;color:#fff;">5</div><div class="dbody"><div class="dtxt" id="dtx-p5-4">Funds released → View Earnings</div></div></div><div class="mstep"><div class="dnum" style="background:#059669;color:#fff;">6</div><div class="dbody"><div class="dtxt">Rate & Review the customer after job completion</div></div></div><div class="mstep"><div class="dnum" style="background:#059669;color:#fff;">7</div><div class="dbody"><div class="dtxt">View Disputes Against Me listing — see status, evidence, and admin updates</div></div></div></div><div class="esec"><div class="esec-hdr"><span class="esec-ttl">&#10067; Questions &amp; Edge Cases</span><button class="addbtn" onclick="addEI(this)">+ Add</button></div><div class="elist"><div class="ei" contenteditable="true" spellcheck="false">What is the payout schedule after escrow release — instant, daily batch, or weekly?<button class="delbtn" onclick="this.parentNode.remove()">&#x2715;</button></div></div></div></div></div></div><div class="modal" id="modal-p6" data-next="" style="display:none;"><div class="modal-inner"><div class="modal-top" style="background:#ECFDF5;border-bottom:2px solid #A7F3D0;"><div class="modal-ttl"><span class="mt-icon">💎</span><div><div class="mt-iface" style="color:#059669;">🔧 Service Provider App</div><div class="mt-title">Subscription Management</div></div></div><button class="modal-close" onclick="closeModal()">&#x2715;</button></div><div class="modal-body"><div class="msteps"><div class="mstep" id="dst-p6-0"><div class="dnum" id="dnm-p6-0" style="background:#059669;color:#fff;">1</div><div class="dbody"><div class="dtxt" id="dtx-p6-0">View My Subscription Plan + Status</div></div></div><div class="mstep " id="dst-p6-1"><div class="dnum" id="dnm-p6-1" style="background:#059669;color:#fff;">2</div><div class="dbody"><div class="dtxt" id="dtx-p6-1">Browse &amp; Compare Subscription Plans</div></div></div><div class="mstep " id="dst-p6-2"><div class="dnum" id="dnm-p6-2" style="background:#059669;color:#fff;">3</div><div class="dbody"><div class="dtxt" id="dtx-p6-2">Renew / Upgrade / Cancel Plan</div></div></div><div class="mstep " id="dst-p6-3"><div class="dnum" id="dnm-p6-3" style="background:#059669;color:#fff;">4</div><div class="dbody"><div class="dtxt" id="dtx-p6-3">Payment processed → Active subscription enables job reception</div></div></div></div><div class="esec"><div class="esec-hdr"><span class="esec-ttl">&#10067; Questions &amp; Edge Cases</span><button class="addbtn" onclick="addEI(this)">+ Add</button></div><div class="elist"></div></div></div></div></div><div class="modal" id="modal-a1" data-next="a2" style="display:none;"><div class="modal-inner"><div class="modal-top" style="background:#F5F3FF;border-bottom:2px solid #DDD6FE;"><div class="modal-ttl"><span class="mt-icon">🔐</span><div><div class="mt-iface" style="color:#7C3AED;">🖥 Admin Web Panel</div><div class="mt-title">Login &amp; Security</div></div></div><button class="modal-close" onclick="closeModal()">&#x2715;</button></div><div class="modal-body"><div class="msteps"><div class="mstep" id="dst-a1-0"><div class="dnum" id="dnm-a1-0" style="background:#7C3AED;color:#fff;">1</div><div class="dbody"><div class="dtxt" id="dtx-a1-0">Enter Email + Password</div></div></div><div class="mstep " id="dst-a1-1"><div class="dnum" id="dnm-a1-1" style="background:#7C3AED;color:#fff;">2</div><div class="dbody"><div class="dtxt" id="dtx-a1-1">Enter OTP (with timer and Resend)</div></div></div><div class="mstep " id="dst-a1-2"><div class="dnum" id="dnm-a1-2" style="background:#7C3AED;color:#fff;">3</div><div class="dbody"><div class="dtxt" id="dtx-a1-2">OTP Verified → Redirect to Dashboard</div></div></div><div class="mstep " id="dst-a1-3"><div class="dnum" id="dnm-a1-3" style="background:#7C3AED;color:#fff;">4</div><div class="dbody"><div class="dtxt" id="dtx-a1-3">Forgot Password → OTP → Reset</div></div></div></div><div class="esec"><div class="esec-hdr"><span class="esec-ttl">&#10067; Questions &amp; Edge Cases</span><button class="addbtn" onclick="addEI(this)">+ Add</button></div><div class="elist"></div></div></div></div></div><div class="modal" id="modal-a2" data-next="a3" style="display:none;"><div class="modal-inner"><div class="modal-top" style="background:#F5F3FF;border-bottom:2px solid #DDD6FE;"><div class="modal-ttl"><span class="mt-icon">📊</span><div><div class="mt-iface" style="color:#7C3AED;">🖥 Admin Web Panel</div><div class="mt-title">Dashboard</div></div></div><button class="modal-close" onclick="closeModal()">&#x2715;</button></div><div class="modal-body"><div class="msteps"><div class="mstep" id="dst-a2-0"><div class="dnum" id="dnm-a2-0" style="background:#7C3AED;color:#fff;">1</div><div class="dbody"><div class="dtxt" id="dtx-a2-0">View KPI Cards: Total Users, Earnings, New Jobs, Verification Requests</div></div></div><div class="mstep has-impact" id="dst-a2-1"><div class="dnum" id="dnm-a2-1" style="background:#7C3AED;color:#fff;">2</div><div class="dbody"><div class="dtxt" id="dtx-a2-1">Click Verification Requests → Jump to Provider approvals</div><div class="pills-wrap"><span class="tpill" style="border-color:#DDD6FE;background:#F5F3FF;color:#7C3AED;" onclick="jumpTo('a4')"><b>&#8618;</b> <b style="font-size:10px;text-transform:uppercase;letter-spacing:.4px;">Admin</b> · 🔩 Goes to Service Provider Management</span></div></div></div><div class="mstep " id="dst-a2-2"><div class="dnum" id="dnm-a2-2" style="background:#7C3AED;color:#fff;">3</div><div class="dbody"><div class="dtxt" id="dtx-a2-2">User Growth Chart &amp; Earnings Chart</div></div></div><div class="mstep " id="dst-a2-3"><div class="dnum" id="dnm-a2-3" style="background:#7C3AED;color:#fff;">4</div><div class="dbody"><div class="dtxt" id="dtx-a2-3">Filter Statistics by Date Range / Category</div></div></div></div><div class="esec"><div class="esec-hdr"><span class="esec-ttl">&#10067; Questions &amp; Edge Cases</span><button class="addbtn" onclick="addEI(this)">+ Add</button></div><div class="elist"></div></div></div></div></div><div class="modal" id="modal-a3" data-next="a4" style="display:none;"><div class="modal-inner"><div class="modal-top" style="background:#F5F3FF;border-bottom:2px solid #DDD6FE;"><div class="modal-ttl"><span class="mt-icon">👥</span><div><div class="mt-iface" style="color:#7C3AED;">🖥 Admin Web Panel</div><div class="mt-title">Customer Management</div></div></div><button class="modal-close" onclick="closeModal()">&#x2715;</button></div><div class="modal-body"><div class="msteps"><div class="mstep" id="dst-a3-0"><div class="dnum" id="dnm-a3-0" style="background:#7C3AED;color:#fff;">1</div><div class="dbody"><div class="dtxt" id="dtx-a3-0">Browse Customer Listing with Pagination</div></div></div><div class="mstep " id="dst-a3-1"><div class="dnum" id="dnm-a3-1" style="background:#7C3AED;color:#fff;">2</div><div class="dbody"><div class="dtxt" id="dtx-a3-1">Sort, Search &amp; Filter Customers</div></div></div><div class="mstep " id="dst-a3-2"><div class="dnum" id="dnm-a3-2" style="background:#7C3AED;color:#fff;">3</div><div class="dbody"><div class="dtxt" id="dtx-a3-2">View Customer Details (Profile, Jobs, Reviews, Disputes)</div></div></div><div class="mstep " id="dst-a3-3"><div class="dnum" id="dnm-a3-3" style="background:#7C3AED;color:#fff;">4</div><div class="dbody"><div class="dtxt" id="dtx-a3-3">Block / Unblock Customer</div></div></div></div><div class="esec"><div class="esec-hdr"><span class="esec-ttl">&#10067; Questions &amp; Edge Cases</span><button class="addbtn" onclick="addEI(this)">+ Add</button></div><div class="elist"></div></div></div></div></div><div class="modal" id="modal-a4" data-next="a5" style="display:none;"><div class="modal-inner"><div class="modal-top" style="background:#F5F3FF;border-bottom:2px solid #DDD6FE;"><div class="modal-ttl"><span class="mt-icon">🔩</span><div><div class="mt-iface" style="color:#7C3AED;">🖥 Admin Web Panel</div><div class="mt-title">Service Provider Management</div></div></div><button class="modal-close" onclick="closeModal()">&#x2715;</button></div><div class="modal-body"><div class="msteps"><div class="mstep" id="dst-a4-0"><div class="dnum" id="dnm-a4-0" style="background:#7C3AED;color:#fff;">1</div><div class="dbody"><div class="dtxt" id="dtx-a4-0">View Provider Registration Requests</div></div></div><div class="mstep " id="dst-a4-1"><div class="dnum" id="dnm-a4-1" style="background:#7C3AED;color:#fff;">2</div><div class="dbody"><div class="dtxt" id="dtx-a4-1">Review Government ID (Shufti Pro) + Uploaded Licenses</div></div></div><div class="mstep has-impact" id="dst-a4-2"><div class="dnum" id="dnm-a4-2" style="background:#7C3AED;color:#fff;">3</div><div class="dbody"><div class="dtxt" id="dtx-a4-2">Accept → Assign Verification Badge → Provider goes live</div><div class="pills-wrap"><span class="tpill" style="border-color:#A7F3D0;background:#ECFDF5;color:#059669;" onclick="jumpTo('p2')"><b>&#8618;</b> <b style="font-size:10px;text-transform:uppercase;letter-spacing:.4px;">Provider</b> · 🏠 Provider is approved — can toggle availability &amp; receive jobs</span></div></div></div><div class="mstep has-impact" id="dst-a4-3"><div class="dnum" id="dnm-a4-3" style="background:#7C3AED;color:#fff;">4</div><div class="dbody"><div class="dtxt" id="dtx-a4-3">Reject → Enter Reason → Notify Provider</div><div class="pills-wrap"><span class="tpill" style="border-color:#A7F3D0;background:#ECFDF5;color:#059669;" onclick="jumpTo('p1')"><b>&#8618;</b> <b style="font-size:10px;text-transform:uppercase;letter-spacing:.4px;">Provider</b> · 📋 Provider sees rejection — can revise &amp; resubmit</span></div></div></div><div class="mstep " id="dst-a4-4"><div class="dnum" id="dnm-a4-4" style="background:#7C3AED;color:#fff;">5</div><div class="dbody"><div class="dtxt" id="dtx-a4-4">Browse Active Providers → Block / Unblock</div></div></div></div><div class="esec"><div class="esec-hdr"><span class="esec-ttl">&#10067; Questions &amp; Edge Cases</span><button class="addbtn" onclick="addEI(this)">+ Add</button></div><div class="elist"></div></div></div></div></div><div class="modal" id="modal-a5" data-next="a6" style="display:none;"><div class="modal-inner"><div class="modal-top" style="background:#F5F3FF;border-bottom:2px solid #DDD6FE;"><div class="modal-ttl"><span class="mt-icon">📁</span><div><div class="mt-iface" style="color:#7C3AED;">🖥 Admin Web Panel</div><div class="mt-title">Job Management</div></div></div><button class="modal-close" onclick="closeModal()">&#x2715;</button></div><div class="modal-body"><div class="msteps"><div class="mstep" id="dst-a5-0"><div class="dnum" id="dnm-a5-0" style="background:#7C3AED;color:#fff;">1</div><div class="dbody"><div class="dtxt" id="dtx-a5-0">Browse All Jobs with Pagination</div></div></div><div class="mstep " id="dst-a5-1"><div class="dnum" id="dnm-a5-1" style="background:#7C3AED;color:#fff;">2</div><div class="dbody"><div class="dtxt" id="dtx-a5-1">Sort, Search &amp; Filter (status, category, date)</div></div></div><div class="mstep " id="dst-a5-2"><div class="dnum" id="dnm-a5-2" style="background:#7C3AED;color:#fff;">3</div><div class="dbody"><div class="dtxt" id="dtx-a5-2">View Job Details (Category, Provider, Customer, Status, Invoices)</div></div></div><div class="mstep " id="dst-a5-3"><div class="dnum" id="dnm-a5-3" style="background:#7C3AED;color:#fff;">4</div><div class="dbody"><div class="dtxt" id="dtx-a5-3">Monitor job progress via status updates</div></div></div></div><div class="esec"><div class="esec-hdr"><span class="esec-ttl">&#10067; Questions &amp; Edge Cases</span><button class="addbtn" onclick="addEI(this)">+ Add</button></div><div class="elist"></div></div></div></div></div><div class="modal" id="modal-a6" data-next="a7" style="display:none;"><div class="modal-inner"><div class="modal-top" style="background:#F5F3FF;border-bottom:2px solid #DDD6FE;"><div class="modal-ttl"><span class="mt-icon">⚖️</span><div><div class="mt-iface" style="color:#7C3AED;">🖥 Admin Web Panel</div><div class="mt-title">Dispute Management</div></div></div><button class="modal-close" onclick="closeModal()">&#x2715;</button></div><div class="modal-body"><div class="msteps"><div class="mstep" id="dst-a6-0"><div class="dnum" id="dnm-a6-0" style="background:#7C3AED;color:#fff;">1</div><div class="dbody"><div class="dtxt" id="dtx-a6-0">View New Disputes Listing</div></div></div><div class="mstep " id="dst-a6-1"><div class="dnum" id="dnm-a6-1" style="background:#7C3AED;color:#fff;">2</div><div class="dbody"><div class="dtxt" id="dtx-a6-1">Open Dispute: Customer, Job Overview, Provider</div></div></div><div class="mstep " id="dst-a6-2"><div class="dnum" id="dnm-a6-2" style="background:#7C3AED;color:#fff;">3</div><div class="dbody"><div class="dtxt" id="dtx-a6-2">Review Details + Evidence Submitted</div></div></div><div class="mstep has-impact" id="dst-a6-3"><div class="dnum" id="dnm-a6-3" style="background:#7C3AED;color:#fff;">4</div><div class="dbody"><div class="dtxt" id="dtx-a6-3">Proceed with Refund (if warranted)</div><div class="pills-wrap"><span class="tpill" style="border-color:#BFDBFE;background:#EFF6FF;color:#2563EB;" onclick="jumpTo('c5')"><b>&#8618;</b> <b style="font-size:10px;text-transform:uppercase;letter-spacing:.4px;">Customer</b> · 💳 Customer receives refund</span><span class="tpill" style="border-color:#A7F3D0;background:#ECFDF5;color:#059669;" onclick="jumpTo('p5')"><b>&#8618;</b> <b style="font-size:10px;text-transform:uppercase;letter-spacing:.4px;">Provider</b> · 🧾 Provider earnings adjusted</span></div></div></div><div class="mstep " id="dst-a6-4"><div class="dnum" id="dnm-a6-4" style="background:#7C3AED;color:#fff;">5</div><div class="dbody"><div class="dtxt" id="dtx-a6-4">Update Dispute Status → Notify Both Parties</div></div></div></div><div class="esec"><div class="esec-hdr"><span class="esec-ttl">&#10067; Questions &amp; Edge Cases</span><button class="addbtn" onclick="addEI(this)">+ Add</button></div><div class="elist"></div></div></div></div></div><div class="modal" id="modal-a7" data-next="" style="display:none;"><div class="modal-inner"><div class="modal-top" style="background:#F5F3FF;border-bottom:2px solid #DDD6FE;"><div class="modal-ttl"><span class="mt-icon">🗂</span><div><div class="mt-iface" style="color:#7C3AED;">🖥 Admin Web Panel</div><div class="mt-title">Categories &amp; Sub-Categories</div></div></div><button class="modal-close" onclick="closeModal()">&#x2715;</button></div><div class="modal-body"><div class="msteps"><div class="mstep" id="dst-a7-0"><div class="dnum" id="dnm-a7-0" style="background:#7C3AED;color:#fff;">1</div><div class="dbody"><div class="dtxt" id="dtx-a7-0">Browse Categories Listing</div></div></div><div class="mstep has-impact" id="dst-a7-1"><div class="dnum" id="dnm-a7-1" style="background:#7C3AED;color:#fff;">2</div><div class="dbody"><div class="dtxt" id="dtx-a7-1">Add New Category: Title + Sub-Categories + License Required flag</div><div class="pills-wrap"><span class="tpill" style="border-color:#A7F3D0;background:#ECFDF5;color:#059669;" onclick="jumpTo('p1')"><b>&#8618;</b> <b style="font-size:10px;text-transform:uppercase;letter-spacing:.4px;">Provider</b> · 📋 New categories available for providers during onboarding</span><span class="tpill" style="border-color:#BFDBFE;background:#EFF6FF;color:#2563EB;" onclick="jumpTo('c2')"><b>&#8618;</b> <b style="font-size:10px;text-transform:uppercase;letter-spacing:.4px;">Customer</b> · 🏠 New categories appear on Customer browse screen</span></div></div></div><div class="mstep " id="dst-a7-2"><div class="dnum" id="dnm-a7-2" style="background:#7C3AED;color:#fff;">3</div><div class="dbody"><div class="dtxt" id="dtx-a7-2">Edit / Delete Category or Sub-Category</div></div></div><div class="mstep " id="dst-a7-3"><div class="dnum" id="dnm-a7-3" style="background:#7C3AED;color:#fff;">4</div><div class="dbody"><div class="dtxt" id="dtx-a7-3">Toggle Active / Inactive</div></div></div></div><div class="esec"><div class="esec-hdr"><span class="esec-ttl">&#10067; Questions &amp; Edge Cases</span><button class="addbtn" onclick="addEI(this)">+ Add</button></div><div class="elist"></div></div></div></div></div>
+
+<div class="modal" id="modal-c_cancel" data-next="c5" style="display:none;"><div class="modal-inner"><div class="modal-top" style="background:#EFF6FF;border-bottom:2px solid #BFDBFE;"><div class="modal-ttl"><span class="mt-icon">🚫</span><div><div class="mt-iface" style="color:#2563EB;">📱 Customer App</div><div class="mt-title">Cancel a Job</div></div></div><button class="modal-close" onclick="closeModal()">&#x2715;</button></div><div class="modal-body"><div class="msteps"><div class="mstep"><div class="dnum" style="background:#2563EB;color:#fff;">1</div><div class="dbody"><div class="dtxt">Select the active job to cancel</div></div></div><div class="mstep"><div class="dnum" style="background:#2563EB;color:#fff;">2</div><div class="dbody"><div class="dtxt">Review cancellation policy & applicable fee (based on provider status)</div></div></div><div class="mstep"><div class="dnum" style="background:#2563EB;color:#fff;">3</div><div class="dbody"><div class="dtxt">Enter reason for cancellation (required)</div></div></div><div class="mstep has-impact"><div class="dnum" style="background:#2563EB;color:#fff;">4</div><div class="dbody"><div class="dtxt">Confirm cancellation — provider notified, fee applied per policy</div><div class="pills-wrap"><span class="tpill" style="color:#059669;background:#ECFDF5;border-color:#A7F3D0;" onclick="openModal('p4')">&#8618; ⚙️ Provider notified of cancellation</span></div></div></div></div><div class="esec"><div class="esec-hdr"><span class="esec-ttl">&#10067; Questions &amp; Edge Cases</span><button class="addbtn" onclick="addEI(this)">+ Add</button></div><div class="elist"><div class="ei" contenteditable="true" spellcheck="false">Cancellation window & refund rules (confirmed):
+• Before provider accepts → free cancel, nothing charged.
+• Provider accepted but not yet left → full visit fee refunded to customer.
+• Provider en route (left for job) → visit fee split 50/50 between platform and provider.
+• Provider arrived → full visit fee goes to provider, no refund.
+• Cancellation reason is required from the customer.<button class="delbtn" onclick="this.parentNode.remove()">&#x2715;</button></div><div class="ei" contenteditable="true" spellcheck="false">OPEN — No visit fee scenario: if a service has no visit fee and the provider is already en route or has arrived, should cancellation be disabled after a buffer time (e.g. 5–10 min after provider accepts)? What should that buffer window be?<button class="delbtn" onclick="this.parentNode.remove()">&#x2715;</button></div><div class="ei" contenteditable="true" spellcheck="false">OPEN — Provider cancellation window: what is the time limit within which a provider can cancel after accepting a job? After that window, cancellation should be restricted or penalised.<button class="delbtn" onclick="this.parentNode.remove()">&#x2715;</button></div><div class="ei" contenteditable="true" spellcheck="false">Account flag: after 3 cancellations, the account is flagged for admin review. Confirm the rolling window (e.g. 3 in 30 days).<button class="delbtn" onclick="this.parentNode.remove()">&#x2715;</button></div><div class="ei" contenteditable="true" spellcheck="false">Does the provider receive any compensation when a customer cancels after the provider has already left? (Proposed: provider receives 50% of visit fee in that scenario.)<button class="delbtn" onclick="this.parentNode.remove()">&#x2715;</button></div><div class="ei" contenteditable="true" spellcheck="false">OPEN — If there is no visit fee, what compensation (if any) should the provider receive for a cancellation after they have already left for the job?<button class="delbtn" onclick="this.parentNode.remove()">&#x2715;</button></div></div></div></div></div></div>
+<div class="modal" id="modal-c_notif" data-next="c7" style="display:none;"><div class="modal-inner"><div class="modal-top" style="background:#EFF6FF;border-bottom:2px solid #BFDBFE;"><div class="modal-ttl"><span class="mt-icon">🔔</span><div><div class="mt-iface" style="color:#2563EB;">📱 Customer App</div><div class="mt-title">Notifications</div></div></div><button class="modal-close" onclick="closeModal()">&#x2715;</button></div><div class="modal-body"><div class="msteps"><div class="mstep"><div class="dnum" style="background:#2563EB;color:#fff;">1</div><div class="dbody"><div class="dtxt">Receive push / email notification for key job events</div></div></div><div class="mstep"><div class="dnum" style="background:#2563EB;color:#fff;">2</div><div class="dbody"><div class="dtxt">Tap notification — deep-link opens the relevant screen</div></div></div><div class="mstep"><div class="dnum" style="background:#2563EB;color:#fff;">3</div><div class="dbody"><div class="dtxt">View notification history listing</div></div></div></div><div class="esec"><div class="esec-hdr"><span class="esec-ttl">&#10067; Questions &amp; Edge Cases</span><button class="addbtn" onclick="addEI(this)">+ Add</button></div><div class="elist"></div></div></div></div></div>
+<div class="modal" id="modal-p_services" data-next="p3" style="display:none;"><div class="modal-inner"><div class="modal-top" style="background:#ECFDF5;border-bottom:2px solid #A7F3D0;"><div class="modal-ttl"><span class="mt-icon">🗂️</span><div><div class="mt-iface" style="color:#059669;">🔧 Provider App</div><div class="mt-title">Manage Services</div></div></div><button class="modal-close" onclick="closeModal()">&#x2715;</button></div><div class="modal-body"><div class="msteps"><div class="mstep " id="dst-p_services-0"><div class="dnum" id="dnm-p_services-0" style="background:#059669;color:#fff;">1</div><div class="dbody"><div class="dtxt" id="dtx-p_services-0">View listing of my offered services with status (Active / Inactive)</div></div></div><div class="mstep " id="dst-p_services-1"><div class="dnum" id="dnm-p_services-1" style="background:#059669;color:#fff;">2</div><div class="dbody"><div class="dtxt" id="dtx-p_services-1">Activate or deactivate a service</div></div></div><div class="mstep " id="dst-p_services-2"><div class="dnum" id="dnm-p_services-2" style="background:#059669;color:#fff;">3</div><div class="dbody"><div class="dtxt" id="dtx-p_services-2">Update visiting price per service</div></div></div><div class="mstep " id="dst-p_services-3"><div class="dnum" id="dnm-p_services-3" style="background:#059669;color:#fff;">4</div><div class="dbody"><div class="dtxt" id="dtx-p_services-3">Edit or delete a service</div></div></div><div class="mstep " id="dst-p_services-4"><div class="dnum" id="dnm-p_services-4" style="background:#059669;color:#fff;">5</div><div class="dbody"><div class="dtxt" id="dtx-p_services-4">Search, sort and filter my services</div></div></div></div><div class="dr-sec"><p class="dr-sec-lbl">What it needs to do</p><ul class="dr-ac"><li><span>List all offered services with active/inactive status</span></li><li><span>Activate / deactivate a service (does not affect active jobs)</span></li><li><span>Update visiting price per sub-category</span></li><li><span>Edit service details or delete a service</span></li><li><span>Sort, search and filter the list</span></li></ul><div class="mstep"><div class="dnum" style="background:#059669;color:#fff;">6</div><div class="dbody"><div class="dtxt">Add a new service category / sub-category (may require re-verification if new license needed)</div></div></div></div><div class="esec"><div class="esec-hdr"><span class="esec-ttl">&#10067; Questions &amp; Edge Cases</span><button class="addbtn" onclick="addEI(this)">+ Add</button></div><div class="elist"></div></div><div style="margin-top:12px;"><button class="nav-btn" style="background:#059669;" onclick="jumpTo('p3')">Go to next flow &#8594;</button></div></div></div></div>
+<div class="modal" id="modal-p_profile" data-next="p6" style="display:none;"><div class="modal-inner"><div class="modal-top" style="background:#ECFDF5;border-bottom:2px solid #A7F3D0;"><div class="modal-ttl"><span class="mt-icon">👤</span><div><div class="mt-iface" style="color:#059669;">🔧 Provider App</div><div class="mt-title">Profile & Account</div></div></div><button class="modal-close" onclick="closeModal()">&#x2715;</button></div><div class="modal-body"><div class="msteps"><div class="mstep " id="dst-p_profile-0"><div class="dnum" id="dnm-p_profile-0" style="background:#059669;color:#fff;">1</div><div class="dbody"><div class="dtxt" id="dtx-p_profile-0">View profile — verification badge, name, email</div></div></div><div class="mstep " id="dst-p_profile-1"><div class="dnum" id="dnm-p_profile-1" style="background:#059669;color:#fff;">2</div><div class="dbody"><div class="dtxt" id="dtx-p_profile-1">Update name, email or phone</div></div></div><div class="mstep " id="dst-p_profile-2"><div class="dnum" id="dnm-p_profile-2" style="background:#059669;color:#fff;">3</div><div class="dbody"><div class="dtxt" id="dtx-p_profile-2">Upload / update profile photo</div></div></div><div class="mstep " id="dst-p_profile-3"><div class="dnum" id="dnm-p_profile-3" style="background:#059669;color:#fff;">4</div><div class="dbody"><div class="dtxt" id="dtx-p_profile-3">View / update onboarding information</div></div></div><div class="mstep " id="dst-p_profile-4"><div class="dnum" id="dnm-p_profile-4" style="background:#059669;color:#fff;">5</div><div class="dbody"><div class="dtxt" id="dtx-p_profile-4">Add / update / delete bank account for payouts</div></div></div><div class="mstep " id="dst-p_profile-5"><div class="dnum" id="dnm-p_profile-5" style="background:#059669;color:#fff;">6</div><div class="dbody"><div class="dtxt" id="dtx-p_profile-5">Reset password</div></div></div><div class="mstep " id="dst-p_profile-6"><div class="dnum" id="dnm-p_profile-6" style="background:#059669;color:#fff;">7</div><div class="dbody"><div class="dtxt" id="dtx-p_profile-6">Delete account</div></div></div></div><div class="dr-sec"><p class="dr-sec-lbl">What it needs to do</p><ul class="dr-ac"><li><span>Verification badge displayed prominently</span></li><li><span>Update name, email, phone (with OTP re-verification if email changes)</span></li><li><span>Upload / update profile photo</span></li><li><span>View and edit onboarding information</span></li><li><span>Add / update / delete bank account (Stripe Connect)</span></li><li><span>Redirect to reset password wizard</span></li><li><span>Delete account workflow with confirmation</span></li></ul></div><div class="esec"><div class="esec-hdr"><span class="esec-ttl">&#10067; Questions &amp; Edge Cases</span><button class="addbtn" onclick="addEI(this)">+ Add</button></div><div class="elist"></div></div><div style="margin-top:12px;"><button class="nav-btn" style="background:#059669;" onclick="jumpTo('p6')">Go to next flow &#8594;</button></div></div></div></div>
+<div class="modal" id="modal-a_rules" data-next="a7" style="display:none;"><div class="modal-inner"><div class="modal-top" style="background:#F5F3FF;border-bottom:2px solid #DDD6FE;"><div class="modal-ttl"><span class="mt-icon">⚙️</span><div><div class="mt-iface" style="color:#7C3AED;">🖥 Admin Panel</div><div class="mt-title">Configure Rules</div></div></div><button class="modal-close" onclick="closeModal()">&#x2715;</button></div><div class="modal-body"><div class="msteps"><div class="mstep " id="dst-a_rules-0"><div class="dnum" id="dnm-a_rules-0" style="background:#7C3AED;color:#fff;">1</div><div class="dbody"><div class="dtxt" id="dtx-a_rules-0">Set platform commission % per job</div></div></div><div class="mstep " id="dst-a_rules-1"><div class="dnum" id="dnm-a_rules-1" style="background:#7C3AED;color:#fff;">2</div><div class="dbody"><div class="dtxt" id="dtx-a_rules-1">Configure emergency surcharge (fixed amount or multiplier)</div></div></div><div class="mstep " id="dst-a_rules-2"><div class="dnum" id="dnm-a_rules-2" style="background:#7C3AED;color:#fff;">3</div><div class="dbody"><div class="dtxt" id="dtx-a_rules-2">Set dispatch radius tiers and timeout windows</div></div></div><div class="mstep " id="dst-a_rules-3"><div class="dnum" id="dnm-a_rules-3" style="background:#7C3AED;color:#fff;">4</div><div class="dbody"><div class="dtxt" id="dtx-a_rules-3">Configure cancellation policy rules</div></div></div><div class="mstep " id="dst-a_rules-4"><div class="dnum" id="dnm-a_rules-4" style="background:#7C3AED;color:#fff;">5</div><div class="dbody"><div class="dtxt" id="dtx-a_rules-4">Set off-hours / weekend pricing rules (if applicable)</div></div></div><div class="mstep " id="dst-a_rules-5"><div class="dnum" id="dnm-a_rules-5" style="background:#7C3AED;color:#fff;">6</div><div class="dbody"><div class="dtxt" id="dtx-a_rules-5">Save configuration — applies to all new jobs</div></div></div></div><div class="dr-sec"><p class="dr-sec-lbl">What it needs to do</p><ul class="dr-ac"><li><span>Platform commission % configurable per category or flat</span></li><li><span>Emergency surcharge amount / multiplier configurable</span></li><li><span>Dispatch radius tiers (e.g. 5 mi → 10 mi) and timeout per tier</span></li><li><span>Cancellation policy rules — time window, fee, refund logic</span></li><li><span>Changes apply to new jobs; existing jobs unaffected</span></li></ul></div><div class="esec"><div class="esec-hdr"><span class="esec-ttl">&#10067; Questions &amp; Edge Cases</span><button class="addbtn" onclick="addEI(this)">+ Add</button></div><div class="elist"></div></div><div style="margin-top:12px;"><button class="nav-btn" style="background:#7C3AED;" onclick="jumpTo('a7')">Go to next flow &#8594;</button></div></div></div></div>
+<div class="modal" id="modal-a_ratings" data-next="a6" style="display:none;"><div class="modal-inner"><div class="modal-top" style="background:#F5F3FF;border-bottom:2px solid #DDD6FE;"><div class="modal-ttl"><span class="mt-icon">⭐</span><div><div class="mt-iface" style="color:#7C3AED;">🖥 Admin Panel</div><div class="mt-title">Ratings & Reviews</div></div></div><button class="modal-close" onclick="closeModal()">&#x2715;</button></div><div class="modal-body"><div class="msteps"><div class="mstep " id="dst-a_ratings-0"><div class="dnum" id="dnm-a_ratings-0" style="background:#7C3AED;color:#fff;">1</div><div class="dbody"><div class="dtxt" id="dtx-a_ratings-0">View platform-wide average rating and total review count</div></div></div><div class="mstep " id="dst-a_ratings-1"><div class="dnum" id="dnm-a_ratings-1" style="background:#7C3AED;color:#fff;">2</div><div class="dbody"><div class="dtxt" id="dtx-a_ratings-1">Browse all reviews — filter by customer or provider reviews</div></div></div><div class="mstep " id="dst-a_ratings-2"><div class="dnum" id="dnm-a_ratings-2" style="background:#7C3AED;color:#fff;">3</div><div class="dbody"><div class="dtxt" id="dtx-a_ratings-2">Open a specific review for detail</div></div></div><div class="mstep " id="dst-a_ratings-3"><div class="dnum" id="dnm-a_ratings-3" style="background:#7C3AED;color:#fff;">4</div><div class="dbody"><div class="dtxt" id="dtx-a_ratings-3">Remove or hide a review that violates platform policy</div></div></div></div><div class="dr-sec"><p class="dr-sec-lbl">What it needs to do</p><ul class="dr-ac"><li><span>Platform-wide average rating and total reviews shown</span></li><li><span>Filter reviews by customer-left or provider-left</span></li><li><span>View individual review detail</span></li><li><span>Admin can remove or hide abusive / policy-violating reviews</span></li></ul></div><div class="esec"><div class="esec-hdr"><span class="esec-ttl">&#10067; Questions &amp; Edge Cases</span><button class="addbtn" onclick="addEI(this)">+ Add</button></div><div class="elist"></div></div><div style="margin-top:12px;"><button class="nav-btn" style="background:#7C3AED;" onclick="jumpTo('a6')">Go to next flow &#8594;</button></div></div></div></div>
+<div class="modal" id="modal-a_profile" data-next="" style="display:none;"><div class="modal-inner"><div class="modal-top" style="background:#F5F3FF;border-bottom:2px solid #DDD6FE;"><div class="modal-ttl"><span class="mt-icon">🔐</span><div><div class="mt-iface" style="color:#7C3AED;">🖥 Admin Panel</div><div class="mt-title">Admin Profile</div></div></div><button class="modal-close" onclick="closeModal()">&#x2715;</button></div><div class="modal-body"><div class="msteps"><div class="mstep " id="dst-a_profile-0"><div class="dnum" id="dnm-a_profile-0" style="background:#7C3AED;color:#fff;">1</div><div class="dbody"><div class="dtxt" id="dtx-a_profile-0">View admin profile — name and email</div></div></div><div class="mstep " id="dst-a_profile-1"><div class="dnum" id="dnm-a_profile-1" style="background:#7C3AED;color:#fff;">2</div><div class="dbody"><div class="dtxt" id="dtx-a_profile-1">Update name or email</div></div></div><div class="mstep " id="dst-a_profile-2"><div class="dnum" id="dnm-a_profile-2" style="background:#7C3AED;color:#fff;">3</div><div class="dbody"><div class="dtxt" id="dtx-a_profile-2">Reset password</div></div></div></div><div class="dr-sec"><p class="dr-sec-lbl">What it needs to do</p><ul class="dr-ac"><li><span>View and update admin name and email</span></li><li><span>Update password via reset flow</span></li></ul></div><div class="esec"><div class="esec-hdr"><span class="esec-ttl">&#10067; Questions &amp; Edge Cases</span><button class="addbtn" onclick="addEI(this)">+ Add</button></div><div class="elist"></div></div></div></div></div>
+</div>
 <script>
-/* ===== STORY DATA (60 stories) ===== */
-const data = [
- { id:"customer", tag:"Customer", title:"Customer journey", role:"Homeowner requesting a service", as:"a customer", prefix:"CUS",
-   steps:[
-    {t:"Register & verify", want:"register and verify my account", soThat:"I can use the app securely",
-     ac:["Capture full name, email and phone","Email OTP with timer + resend","On success, route to home"],
-     q:[{s:"med",x:"Is a saved card required at sign-up, or only at checkout?",m:["M3"]}]},
-    {t:"Set location", want:"set my service location", soThat:"jobs are matched to where I am",
-     ac:["Type address → locations fetched from maps","Select a location; save / cancel"],
-     q:[{s:"low",x:"One primary saved address, or multiple addresses per customer?",m:["M3"]}]},
-    {t:"Login & reset password", n:true, want:"log in and reset my password if needed", soThat:"I can get back into my account",
-     ac:["Email + password login","Remember me (default on)","Forgot / reset via OTP"], q:[]},
-    {t:"Home & quick actions", n:true, want:"land on a home screen with quick actions", soThat:"I can act fast, including in an emergency",
-     ac:["Menu, navigation & quick actions","'Have an emergency?' opens the phone dialer (911)","Categories visible from home"], q:[]},
-    {t:"Browse providers", want:"browse categories and verified providers", soThat:"I can choose someone I trust",
-     ac:["List categories and provider profiles","Show verified badge, rating, reviews","Favourite; sort, search, filter"],
-     q:[{s:"high",x:"Which categories ship in phase 1? Plumbing / HVAC / electrical confirmed; locksmith & roadside flagged 'simpler'; final list not locked.",m:["M2","M3"]},
-        {s:"med",x:"Launch geography — start local then expand. NJ / NY area first?",m:["M1"]}]},
-    {t:"Create a job", want:"create a job with photos and video", soThat:"the right tradesperson understands the problem",
-     ac:["Select category; enter title + description","Upload photo(s) and a video (optional)","Submit creates the job request"],
-     q:[{s:"high",x:"How granular are sub-categories? Gene stressed plumbers specialise (drain vs. water heater vs. boiler).",m:["M2"]},
-        {s:"med",x:"Is video upload (vs. photo only) confirmed for the MVP build?",m:["M2"]}]},
-    {t:"AI trade suggestion", want:"get an AI suggestion for the right trade", soThat:"I don't need to know the trade jargon",
-     ac:["AI suggests sub-categories from the job input","I can select a suggested sub-category"],
-     q:[{s:"high",x:"Does the AI read the video, the image, or guided questions? Gene expects video; team proposed image / questions.",m:["M2","M3"]},
-        {s:"med",x:"Fallback path if the AI can't determine the trade?",m:["M3"]}]},
-    {t:"Emergency vs normal", want:"flag the job emergency or normal", soThat:"I can get faster help when it's urgent",
-     ac:["Select job type: emergency or normal","Emergency shows the emergency price → accept / reject","Emergency price deduction confirmation"],
-     q:[{s:"med",x:"How is the emergency price set (multiplier vs. fixed amount)?",m:["M2"]}]},
-    {t:"Schedule for later", n:true, want:"schedule a job for a later time", soThat:"I can book non-urgent work in advance",
-     ac:["Choose a future date / time","Scheduled jobs tracked separately","Reminder before the slot"],
-     q:[{s:"med",x:"How do scheduled jobs interact with the real-time dispatch radius and provider availability?",m:["M2"]}]},
-    {t:"Get matched & wait", want:"watch the app find a provider in real time", soThat:"I'm reassured help is coming",
-     ac:["Request dispatched to nearby providers","Waiting state with clear feedback","Radius expands behind the scenes"],
-     q:[{s:"high",x:"What does the customer see while waiting, and on the 'no provider found / timeout' screen?",m:["M2"]},
-        {s:"med",x:"What response window is the customer promised?",m:["M2"]}]},
-    {t:"Confirm provider", want:"review providers and confirm one", soThat:"I lock in the service",
-     ac:["See interested providers + offered price","Confirm with a price-deduction pop-up","Visiting payment held in escrow"],
-     q:[{s:"med",x:"Visiting fee vs. full price up front — which is the default the customer sees?",m:["M2","M3"]}]},
-    {t:"Track arrival", want:"track my provider's status and ETA", soThat:"I know when they'll arrive",
-     ac:["Statuses: on the way / arriving","ETA + distance shown","Map line refreshed at intervals"],
-     q:[{s:"med",x:"Confirm customer-side interval tracking is in MVP and full live navigation is deferred.",m:["M2","M3"]}]},
-    {t:"My jobs", n:true, want:"see my active and past jobs", soThat:"I can track and revisit my requests",
-     ac:["Active + all jobs listing with pagination","Sort, search & filter","Job details with progress & statuses"], q:[]},
-    {t:"Cancel a job", n:true, want:"cancel a job I created", soThat:"I'm not stuck paying for something I no longer need",
-     ac:["Cancel workflow with confirmation","Cancellation policy / time window applies","Refund handled per policy"],
-     q:[{s:"med",x:"Cancellation policy — refund rules and who keeps the visiting fee if cancelled after dispatch?",m:["M2","M3"]}]},
-    {t:"Pay invoice", want:"pay the provider's invoice in-app", soThat:"I can settle quickly and safely",
-     ac:["See invoice: due amount + reason","Confirm payment → checkout via Stripe"],
-     q:[{s:"low",x:"Are tips (and any added fees) included in the MVP checkout?",m:["M2"]}]},
-    {t:"Invoices & payments", n:true, want:"see my invoices and payment history", soThat:"I can review what I've paid",
-     ac:["Pending + all invoices / payments listing","Sort, search & filter","Open invoice / payment details"], q:[]},
-    {t:"Rate & rebook", want:"rate, review and rebook a provider", soThat:"I can reuse good technicians",
-     ac:["1–5 star rating + text review","Save / cancel the review","One-tap rebook of the last job"],
-     q:[{s:"low",x:"Is one-tap rebook of the last provider in phase 1?",m:["M2"]}]},
-    {t:"My reviews & ratings", n:true, want:"see and manage the reviews I've left", soThat:"I can keep my feedback accurate",
-     ac:["My reviews & ratings listing","Average rating + total count","Edit / delete my review"], q:[]},
-    {t:"Raise a dispute", want:"raise a dispute with evidence", soThat:"I can seek a refund or resolution",
-     ac:["Select job; enter reason + description","Upload photo evidence; routes to admin"],
-     q:[{s:"med",x:"What evidence types are allowed, and what refund outcome does the customer expect?",m:["M2","M3"]}]},
-    {t:"My disputes", n:true, want:"see and manage my disputes", soThat:"I can follow up on unresolved issues",
-     ac:["Dispute listing with statuses","Dispute detail view","Edit / delete a dispute"], q:[]},
-    {t:"Profile & payments", n:true, want:"manage my profile and payment methods", soThat:"my details and cards stay current",
-     ac:["View / update name and email","Add / update / delete card and bank","Manage address, photo; delete account"], q:[]},
-    {t:"Notifications", n:true, want:"see my notifications", soThat:"I stay updated on my jobs",
-     ac:["Notification listing","Tap to open the relevant screen"], q:[]},
-   ]},
- { id:"provider", tag:"Provider", title:"Provider journey", role:"Plumber / HVAC / electrician", as:"a service provider", prefix:"PRV",
-   steps:[
-    {t:"Register & pick services", want:"register and pick the services I offer", soThat:"I receive relevant jobs",
-     ac:["Enter name & email","Select categories + sub-categories","Set a visiting price per sub-category"],
-     q:[{s:"med",x:"Can a provider work under someone else's license, or as a company's employee?",m:["M2"]}]},
-    {t:"Upload license & ID", want:"upload my license and government ID", soThat:"I can be verified to work",
-     ac:["Upload license PDF(s) for required sub-categories","Upload government photo ID","Submit for approval"],
-     q:[{s:"high",x:"Which sub-categories require a license vs. not (e.g. handyman)? The license-required matrix isn't defined.",m:["M2","M3"]}]},
-    {t:"Background check", want:"have my identity and background verified", soThat:"customers can trust me",
-     ac:["Government ID verified via Shufti Pro","Professional license verified manually by admin"],
-     q:[{s:"high",x:"Who runs the criminal background check? Shufti verifies identity only, not criminal history.",m:["M2"]},
-        {s:"high",x:"Do we trust the company's own checks or run our own? Juan wants independent due diligence.",m:["M2"]}]},
-    {t:"Approval status", want:"see my verification status and reasons", soThat:"I know if I can work or what to fix",
-     ac:["Status: approved / pending / rejected","Rejection reason shown","License expiry tracked with reminder"],
-     q:[{s:"low",x:"How many days before expiry do we warn them — 15, 30 or 90?",m:["M3"]}]},
-    {t:"Login & reset password", n:true, want:"log in and reset my password", soThat:"I can access my provider account",
-     ac:["Email + password","Remember me","Forgot / reset via OTP"], q:[]},
-    {t:"Go online", want:"go online and receive nearby jobs", soThat:"I only get jobs when I'm working",
-     ac:["Online / offline toggle","Incoming jobs with a remaining timer","Provider emergency button"],
-     q:[{s:"high",x:"Provider response window before the job hops to a wider radius (Juan floated 2–5 min)?",m:["M2"]}]},
-    {t:"Manage my services", n:true, want:"manage the services I offer", soThat:"my availability and prices stay current",
-     ac:["List my offered services","Activate / deactivate a service","Update price; edit / delete; search & sort"], q:[]},
-    {t:"Accept / bid", want:"accept, bid on, or reject a job", soThat:"I can choose jobs that fit",
-     ac:["Accept with full price or visiting price","Reject with a reason"],
-     q:[{s:"high",x:"Capability threshold — who decides which jobs a provider may take (newbie vs. master plumber)?",m:["M2"]}]},
-    {t:"Add a helper", want:"add a verified helper to a job", soThat:"my crew is accounted for and trusted",
-     ac:["Add helper (name + photo)","Helper shown to the customer","Only vetted helpers allowed (per Juan)"],
-     q:[{s:"high",x:"Must every helper and every company employee be vetted/background-checked before taking a job? Juan: yes.",m:["M2"]},
-        {s:"high",x:"Do companies get their own account + web interface (employee roster, earnings, analytics)?",m:["M2"]}]},
-    {t:"View customer profile", n:true, want:"view the customer's profile for a job", soThat:"I know who and where I'm serving",
-     ac:["Customer name + profile","Phone shown if the job is ongoing","View customer ratings & reviews"], q:[]},
-    {t:"Travel & contact", want:"navigate to the job and call the customer", soThat:"I can reach them and arrive",
-     ac:["Customer location pin → open maps","Call customer after acceptance","ETA shown"],
-     q:[{s:"low",x:"Providers also get the 911 / emergency button — confirm placement.",m:["M3"]}]},
-    {t:"Cancel a job", n:true, want:"cancel a job I accepted", soThat:"I can back out when I genuinely can't make it",
-     ac:["Cancel workflow with confirmation","Job re-created and re-dispatched","Cancellation policy applies"],
-     q:[{s:"med",x:"Is there a penalty or rating impact for provider cancellations?",m:["M2"]}]},
-    {t:"Create invoice", want:"create an invoice for the work", soThat:"I get paid for the actual job",
-     ac:["Enter visiting price separately, or a total","Add a textual reason","Customer accepts the invoice"],
-     q:[{s:"med",x:"Should invoices itemise labour vs. parts/materials? Gene's supply-house idea depends on materials.",m:["M3"]}]},
-    {t:"Get paid", want:"receive my earnings to my bank", soThat:"I'm paid out reliably",
-     ac:["Earnings list: total / pending","Payout to my bank via Stripe Connect"],
-     q:[{s:"high",x:"When are funds released from escrow, and what marks a job 'complete' enough to pay out?",m:["M3"]}]},
-    {t:"Review customer & ratings", n:true, want:"review the customer and see my own ratings", soThat:"feedback flows both ways",
-     ac:["Rate the customer after the job","View my average rating + reviews","Edit / delete my review"], q:[]},
-    {t:"Disputes against me", n:true, want:"see and respond to disputes raised against me", soThat:"I can defend my work",
-     ac:["Dispute listing with statuses","Dispute detail view","Notified when a dispute opens"], q:[]},
-    {t:"Profile & account", n:true, want:"manage my profile and bank account", soThat:"my payout details and info stay current",
-     ac:["Verification badge; update name & email","Add / update / delete bank account","Onboarding info, photo; delete account"], q:[]},
-    {t:"Subscribe", want:"subscribe to the platform monthly", soThat:"I can keep receiving leads",
-     ac:["Monthly subscription via in-app purchase","Plan status lifecycle; renew / upgrade / cancel"],
-     q:[{s:"med",x:"Confirm the provider subscription model, and account for the app-store cut on in-app purchases.",m:["M3"]}]},
-   ]},
- { id:"admin", tag:"Admin", title:"Admin / owner journey", role:"Platform owner (Gene / Juan)", as:"the platform owner", prefix:"ADM",
-   steps:[
-    {t:"Login & dashboard", want:"log in and see platform stats", soThat:"I can monitor the business",
-     ac:["Totals: users, earnings, jobs, verification requests","Growth & earnings charts with filters"], q:[]},
-    {t:"Verify providers", want:"approve or reject provider verification", soThat:"only legitimate providers operate",
-     ac:["See requests with ID status","Approve / reject with a reason","Assign badge; block; expiry auto-flagged"],
-     q:[{s:"low",x:"System auto-flags ID / license expiry — confirm the notification window.",m:["M3"]}]},
-    {t:"Set capability", want:"set what jobs each provider can take", soThat:"jobs match provider competence",
-     ac:["Define capability threshold per provider","Reflected to customers"],
-     q:[{s:"high",x:"Where and how is the capability threshold configured per provider?",m:["M2"]}]},
-    {t:"Manage categories", want:"manage categories and sub-categories", soThat:"the catalog stays accurate",
-     ac:["Add / edit / delete category + sub-category","Set the license-required flag per sub-category"],
-     q:[{s:"high",x:"Final category + sub-category tree and the license rules per node?",m:["M2","M3"]}]},
-    {t:"Manage customers", want:"view and block customers", soThat:"I can remove abusive users",
-     ac:["Customer listing with sort / search / filter","View details; block / unblock"], q:[]},
-    {t:"Job management", n:true, want:"view all jobs and their details", soThat:"I can oversee platform activity",
-     ac:["Job listing with pagination","Sort, search & filter","Open full job details"], q:[]},
-    {t:"Ratings & reviews", n:true, want:"review ratings and reviews across the platform", soThat:"I can monitor service quality",
-     ac:["Average rating + total reviews","Reviews listing (customer + provider)"], q:[]},
-    {t:"Resolve disputes", want:"mediate disputes and issue refunds", soThat:"conflicts are resolved fairly",
-     ac:["See new / all disputes with evidence","Review both sides; proceed with refund","Update the dispute status"],
-     q:[{s:"high",x:"Refund mechanics — partial vs. full, and how it interacts with escrow + the provider payout?",m:["M2","M3"]}]},
-    {t:"Configure rules", want:"configure fees, pricing rules and promos", soThat:"the platform runs the way I want",
-     ac:["Set the platform-fee model","Emergency / off-hours behaviour","Promo codes (future) and zones"],
-     q:[{s:"med",x:"Confirm the platform-fee model the admin sets.",m:["M3"]},
-        {s:"low",x:"Promo codes / zone management — MVP or future?",m:["M3"]}]},
-    {t:"Admin profile", n:true, want:"manage my admin profile and password", soThat:"my account stays secure",
-     ac:["View / update admin profile","Update password"], q:[]},
-   ]},
- { id:"system", tag:"System", title:"Behind the scenes", role:"Dispatch, payments, integrations", as:"the platform", prefix:"SYS",
-   steps:[
-    {t:"Job-suggestion engine", want:"route jobs and widen the radius on timeout", soThat:"jobs get filled fast, Uber-style",
-     ac:["Define eligible providers per job","Distribute to nearby first; expand radius","Request timeout; recreate if cancelled"],
-     q:[{s:"high",x:"Radius tiers (e.g. 5 mi → 10 mi) and the timeout per tier?",m:["M2"]},
-        {s:"high",x:"Eligibility rule = category + sub-category + license + verified + capability + availability — confirm the full set.",m:["M2","M3"]}]},
-    {t:"Real-time sockets", n:true, want:"push real-time updates over sockets", soThat:"users see changes without refreshing",
-     ac:["Socket framework with auth","Publish / subscribe / handle events","Reliable message delivery"], q:[]},
-    {t:"Escrow & payments", want:"hold payment in escrow and split payouts", soThat:"money is safe until the job's done",
-     ac:["Hold visiting payment until a status","Stripe Connect splits fee vs. payout","Refund workflow"],
-     q:[{s:"high",x:"Which job status releases escrow, and what is the payout schedule?",m:["M3"]},
-        {s:"med",x:"Cancellation — who keeps the visiting fee if the customer cancels after dispatch?",m:["M2","M3"]}]},
-    {t:"Location & tracking", want:"fetch location and compute ETA at intervals", soThat:"customers see arrival without heavy cost",
-     ac:["Periodic provider-location fetch","Distance / ETA via Google Maps","Line to customer; live nav deferred"],
-     q:[{s:"med",x:"Confirm the fetch interval (3 vs. 5 min) and that full live navigation is out of the MVP.",m:["M3"]}]},
-    {t:"AI sub-category agent", want:"suggest sub-categories with an LLM", soThat:"customers reach the right specialist",
-     ac:["Rules + job title / description + category → suggestions","Runs as a microservice"],
-     q:[{s:"high",x:"Which LLM (Gemini / GPT / Claude — TBD) and image-vs-video input?",m:["M3"]}]},
-    {t:"Video player & playback", n:true, want:"play uploaded job videos with controls", soThat:"users can review the problem footage",
-     ac:["Play / pause / resume","Audio level selection","Playback API & service layer"], q:[]},
-    {t:"Notifications", want:"trigger push and email notifications", soThat:"users act in real time",
-     ac:["Firebase push + email triggers","Emergency-nearby alerts to providers","Notification listings per app"],
-     q:[{s:"low",x:"Email service provider (SendGrid / TBD) — confirm.",m:["M3"]}]},
-    {t:"Audit logs & documents", n:true, want:"log system activity and manage documents", soThat:"the platform is auditable",
-     ac:["Document management module","System activity auditing","Application audit logs"], q:[]},
-    {t:"Accounts & IP", want:"run on client-owned accounts and IP", soThat:"the client owns everything",
-     ac:["Stripe, Shufti, Maps, Stores, AWS, Firebase under client","Source & IP handed to the client"],
-     q:[{s:"med",x:"Does the vendor file the US patent, or only the client?",m:["M3"]},
-        {s:"med",x:"All third-party accounts provisioned under the client before build starts?",m:["M3"]}]},
-    {t:"Landing page & publishing", n:true, want:"publish the apps with a marketing landing page", soThat:"users can discover and download",
-     ac:["Landing page for store compliance","Play Store + App Store publishing","In-app purchase setup on both stores"], q:[]},
-   ]},
-];
 
-const laneColors={customer:"var(--amber)",provider:"var(--blue)",admin:"var(--teal)",system:"var(--graphite)"};
-const hex={customer:"#E8851E",provider:"#2F6FB0",admin:"#1F8A70",system:"#4B5563"};
-const esc=s=>(s+"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
-
-/* story code lookup */
-const storyByCode={};
-data.forEach(lane=>lane.steps.forEach((s,i)=>{const code=`${lane.prefix}-${String(i+1).padStart(2,"0")}`;storyByCode[code]={code,title:s.t,q:s.q||[],lane:lane.id,laneTag:lane.tag};}));
-
-/* ===== STORY VIEW ===== */
-const canvas=document.getElementById("canvas");
-canvas.innerHTML=data.map(lane=>{
-  const hi=lane.steps.reduce((n,s)=>n+s.q.filter(q=>q.s==="high").length,0);
-  const nodes=lane.steps.map((s,i)=>{
-    const hasHi=s.q.some(q=>q.s==="high");
-    const sid=`${lane.prefix}-${String(i+1).padStart(2,"0")}`;
-    let badge = !s.q.length ? `<span class="qbadge zero">no queries</span>`
-      : `<span class="qbadge ${hasHi?"has-hi":""}">${s.q.length} ${s.q.length>1?"queries":"query"}${hasHi?" ⚑":""}</span>`;
-    const newpill = s.n ? `<span class="newpill">NEW</span>` : "";
-    const node=`<button class="node ${hasHi?"has-hi":""} ${s.n?"is-new":""}" data-lane="${lane.id}" data-idx="${i}">
-        <span class="node-top"><span class="sid">${sid}</span>${newpill}</span>
-        <span class="asa">As ${lane.as},</span>
-        <span class="want">I want to <b>${esc(s.want)}</b></span>
-        <span class="nfoot">${badge}</span></button>`;
-    const conn=i<lane.steps.length-1?`<span class="conn" aria-hidden="true"></span>`:"";
-    return node+conn;
-  }).join("");
-  return `<section class="swimlane ${lane.id}" data-lane="${lane.id}">
-      <div class="lane-label"><span class="tag">${lane.tag}</span><h2>${lane.title}</h2>
-        <span class="role">${lane.role}</span><span class="cnt">${lane.steps.length} stories · <b>${hi} high</b></span></div>
-      <div class="track">${nodes}</div></section>`;
-}).join("");
-
-/* ===== DRAWER ===== */
-const drawer=document.getElementById("drawer"), backdrop=document.getElementById("backdrop");
-let lastFocus=null;
-function openShell(){drawer.classList.add("open");backdrop.classList.add("open");drawer.setAttribute("aria-hidden","false");document.getElementById("dClose").focus();}
-function closeDrawer(){
-  drawer.classList.remove("open");backdrop.classList.remove("open");drawer.setAttribute("aria-hidden","true");
-  document.querySelectorAll(".node.active").forEach(n=>n.classList.remove("active"));
-  if(lastFocus) lastFocus.focus();
+const FM = {"c1": {"interface": "customer", "title": "Registration & Login"}, "c2": {"interface": "customer", "title": "Home & Browse Services"}, "c3": {"interface": "customer", "title": "Create a Job Request"}, "c4": {"interface": "customer", "title": "Monitor Job & Select Provider"}, "c5": {"interface": "customer", "title": "Payments & Invoices"}, "c6": {"interface": "customer", "title": "Ratings, Reviews & Disputes"}, "c7": {"interface": "customer", "title": "Profile Management"}, "p1": {"interface": "provider", "title": "Registration & Onboarding"}, "p2": {"interface": "provider", "title": "Home & Availability"}, "p3": {"interface": "provider", "title": "Receiving & Accepting Jobs"}, "p4": {"interface": "provider", "title": "Managing an Active Job"}, "p5": {"interface": "provider", "title": "Create Invoice & Receive Payment"}, "p6": {"interface": "provider", "title": "Subscription Management"}, "a1": {"interface": "admin", "title": "Login & Security"}, "a2": {"interface": "admin", "title": "Dashboard"}, "a3": {"interface": "admin", "title": "Customer Management"}, "a4": {"interface": "admin", "title": "Service Provider Management"}, "a5": {"interface": "admin", "title": "Job Management"}, "a6": {"interface": "admin", "title": "Dispute Management"}, "a7": {"interface": "admin", "title": "Categories & Sub-Categories"}};
+const ST = {};
+function jumpTo(fid) {
+    const meta = FM[fid]; if (!meta) return;
+    _doJump(fid, meta.interface);
 }
-function renderQueries(qs){
-  const list=document.getElementById("dQueries");
-  list.innerHTML = qs.length
-    ? qs.map(q=>{const tags=q.m.map(t=>`<span class="mtag">${t}</span>`).join("");
-        return `<li class="${q.s}"><span class="dot ${q.s}"></span><span class="qbody"><span class="qtext">${esc(q.x)}</span><span class="tags">${tags}</span></span></li>`;}).join("")
-    : `<li class="empty" style="border:none;background:none;padding:0;display:block">No open queries captured here.</li>`;
+function addEI(btn) {
+    const list = btn.closest('.esec').querySelector('.elist');
+    const d = document.createElement('div'); d.className = 'ei';
+    d.contentEditable = 'true'; d.spellcheck = false; d.textContent = '• ';
+    const db = document.createElement('button'); db.className = 'delbtn';
+    db.textContent = '\u2715'; db.onclick = () => d.remove();
+    d.appendChild(db); attachEI(d); list.appendChild(d); d.focus();
 }
-function openStory(laneId,idx){
-  const lane=data.find(l=>l.id===laneId), step=lane.steps[idx], sid=`${lane.prefix}-${String(idx+1).padStart(2,"0")}`;
-  const tag=document.getElementById("dTag"); tag.textContent=`${lane.tag} · ${sid}`; tag.style.background=hex[laneId];
-  document.getElementById("dStep").textContent=lane.title;
-  document.getElementById("dTitle").textContent=step.t;
-  document.getElementById("dNew").style.display = step.n ? "inline-block" : "none";
-  const story=document.getElementById("dStory"); story.style.setProperty("--dlane",hex[laneId]);
-  story.innerHTML=`<p><span class="lab">As</span><span class="em">${lane.as},</span></p>
-     <p><span class="lab">I want to</span><span class="em">${esc(step.want)}</span></p>
-     <p><span class="lab">so that</span>${esc(step.soThat)}.</p>`;
-  document.getElementById("acLabel").textContent="Acceptance criteria";
-  const ac=document.getElementById("dAc"); ac.className="ac";
-  ac.innerHTML=step.ac.map(a=>`<li><span></span><span>${esc(a)}</span></li>`).join("");
-  renderQueries(step.q);
-  openShell();
-  document.querySelectorAll(".node.active").forEach(n=>n.classList.remove("active"));
-  const el=document.querySelector(`.node[data-lane="${laneId}"][data-idx="${idx}"]`);
-  if(el) el.classList.add("active"); lastFocus=el;
-}
-canvas.addEventListener("click",e=>{const n=e.target.closest(".node");if(n)openStory(n.dataset.lane,+n.dataset.idx);});
-document.getElementById("dClose").addEventListener("click",closeDrawer);
-backdrop.addEventListener("click",closeDrawer);
-document.addEventListener("keydown",e=>{if(e.key==="Escape"&&drawer.classList.contains("open"))closeDrawer();});
-const laneBtns=document.querySelectorAll("#laneFilter button");
-laneBtns.forEach(btn=>btn.addEventListener("click",()=>{
-  laneBtns.forEach(b=>b.setAttribute("aria-pressed",b===btn?"true":"false"));
-  const sel=btn.dataset.lane;
-  document.querySelectorAll(".swimlane").forEach(sec=>sec.classList.toggle("hidden",!(sel==="all"||sec.dataset.lane===sel)));
-}));
-
-/* ===== SEQUENCE DIAGRAM ===== */
-const parts=[["customer","Customer","Homeowner"],["provider","Provider","Tradesperson"],["admin","Admin","Owner / ops"],["system","System","Engine & integrations"]];
-const pidx={customer:0,provider:1,admin:2,system:3};
-const LM=40, GAP=250, BOXW=150, HEADH=70, SECH=34, MSGH=56, TOPPAD=16;
-const centers=parts.map((p,i)=>LM+BOXW/2+i*GAP);
-const SW=centers[centers.length-1]+BOXW/2+LM;
-
-/* flows → ordered messages. kind: call | return | self. refs = story codes (queries aggregate from them) */
-const seqFlows=[
- {t:"Provider onboarding & verification", m:[
-   ["provider","admin","submit registration + license + ID","call","",["PRV-01","PRV-02"]],
-   ["admin","system","run ID verification (Shufti)","call","",["PRV-03","SYS-09"]],
-   ["system","admin","ID verified ✓","return","",["PRV-03"]],
-   ["admin","provider","approve & assign badge / reject","call","",["PRV-03","PRV-04","ADM-02"]],
- ]},
- {t:"License renewal (ongoing)", m:[
-   ["system","provider","license expiry reminder","call","",["SYS-07","PRV-04"]],
-   ["provider","admin","re-upload license","call","",["PRV-02"]],
-   ["admin","provider","re-verified","return","",["ADM-02","PRV-04"]],
- ]},
- {t:"Job creation & dispatch", m:[
-   ["customer","system","create job (photo / video)","call","",["CUS-06"]],
-   ["customer","system","request AI trade suggestion","call","",["CUS-07","SYS-05"]],
-   ["system","customer","suggested sub-category","return","",["CUS-07","SYS-05"]],
-   ["customer","system","set urgency / schedule + submit","call","",["CUS-08","CUS-09"]],
-   ["system","provider","dispatch job alert (nearby)","call","",["SYS-01","PRV-06"]],
-   ["system","system","widen radius on timeout","self","if no accept in X min",["SYS-01"]],
-   ["system","customer","no provider found","return","else",["CUS-10"]],
- ]},
- {t:"Match, confirm & helper vetting", m:[
-   ["provider","customer","accept / bid","call","",["PRV-08"]],
-   ["customer","system","confirm + pay visiting fee","call","",["CUS-11","SYS-03"]],
-   ["system","system","hold fee in escrow","self","",["SYS-03"]],
-   ["customer","provider","confirmed → proceed","call","",["CUS-11","PRV-11"]],
-   ["provider","admin","add helper → request vetting","call","if crew needed",["PRV-09","ADM-02"]],
-   ["admin","customer","verified helper shown","return","if cleared",["PRV-09","CUS-11"]],
- ]},
- {t:"En route & live tracking", m:[
-   ["provider","system","share live location","call","",["PRV-11","SYS-04"]],
-   ["system","customer","ETA & status updates","call","every few min",["SYS-04","CUS-12"]],
- ]},
- {t:"Completion, payment & ratings", m:[
-   ["provider","customer","send invoice","call","",["PRV-13","CUS-15"]],
-   ["customer","system","pay invoice","call","",["CUS-15","SYS-03"]],
-   ["system","system","release escrow + split","self","",["SYS-03"]],
-   ["system","provider","payout to bank","call","",["SYS-03","PRV-14"]],
-   ["customer","provider","rate & review","call","",["CUS-17","PRV-15"]],
- ]},
- {t:"Cancellation (either side)", m:[
-   ["customer","system","cancel job","call","",["CUS-14","SYS-03"]],
-   ["system","provider","notify cancellation / refund","call","",["SYS-03","PRV-12"]],
-   ["provider","system","cancel accepted job","call","provider-side",["PRV-12","SYS-01"]],
-   ["system","provider","re-create & re-dispatch","call","",["SYS-01","PRV-08"]],
- ]},
- {t:"Dispute & refund", m:[
-   ["customer","admin","raise dispute + evidence","call","",["CUS-19","ADM-08"]],
-   ["admin","provider","notify dispute (request response)","call","",["ADM-08","PRV-16"]],
-   ["provider","admin","respond / defend","return","",["PRV-16"]],
-   ["admin","system","issue refund decision","call","",["ADM-08","SYS-03"]],
-   ["system","customer","refund processed","return","",["SYS-03","CUS-19"]],
- ]},
- {t:"Subscriptions & fees", m:[
-   ["admin","system","set platform-fee model","call","",["ADM-09","SYS-03"]],
-   ["provider","system","subscribe (in-app purchase)","call","",["PRV-18","SYS-03"]],
-   ["system","system","apply fee on split","self","",["SYS-03"]],
- ]},
- {t:"Notifications (cross-cutting)", m:[
-   ["system","customer","push / email job updates","call","",["SYS-07","CUS-22"]],
-   ["system","provider","push / email job & emergency alerts","call","",["SYS-07","PRV-06"]],
- ]},
-];
-
-function aggQueries(refs){
-  const seen=new Set(), out=[];
-  refs.forEach(c=>(storyByCode[c]?storyByCode[c].q:[]).forEach(q=>{if(!seen.has(q.x)){seen.add(q.x);out.push(q);}}));
-  const rank={high:0,med:1,low:2}; out.sort((a,b)=>rank[a.s]-rank[b.s]);
-  return out;
-}
-const seqMsgs=[];
-function buildSeq(){
-  const head=document.getElementById("seqHead"), inner=document.getElementById("seqInner");
-  head.style.height=HEADH+"px"; head.style.width=SW+"px";
-  head.innerHTML=parts.map((p,i)=>`<div class="phead" style="left:${centers[i]-BOXW/2}px;--pc:${hex[p[0]]}"><b>${p[1]}</b><small>${p[2]}</small></div>`).join("");
-  const parate=[]; let y=TOPPAD, mid=0;
-  seqFlows.forEach((f,fi)=>{
-    parate.push(`<rect x="${LM-16}" y="${y}" width="${SW-2*(LM-16)}" height="${SECH}" rx="7" fill="#F0F2F5"/>
-      <text x="${LM-4}" y="${y+SECH/2+4}" font-family="${'Space Grotesk,sans-serif'}" font-weight="600" font-size="13" fill="#1A1D23">${fi+1}.  ${esc(f.t)}</text>`);
-    y+=SECH+6;
-    f.m.forEach(msg=>{
-      const [from,to,label,kind,guard,refs]=msg;
-      const x1=centers[pidx[from]], x2=centers[pidx[to]], my=y+MSGH/2;
-      const qs=aggQueries(refs);
-      const col=hex[from];
-      // hit area
-      parate.push(`<rect class="mhit" data-mid="${mid}" x="0" y="${y}" width="${SW}" height="${MSGH}"/>`);
-      if(kind==="self"){
-        parate.push(`<path d="M${x1},${my-9} h28 v18 h-28" fill="none" stroke="${col}" stroke-width="2" marker-end="url(#ah-call)"/>`);
-        parate.push(`<text x="${x1+40}" y="${my-2}" font-size="12" font-family="${'Inter,sans-serif'}" fill="#1A1D23">↺ ${esc(label)}</text>`);
-      } else {
-        const dash = kind==="return" ? ` stroke-dasharray="6 4"` : "";
-        const mk = kind==="return" ? "ah-ret" : "ah-call";
-        parate.push(`<path d="M${x1},${my} L${x2},${my}" fill="none" stroke="${col}" stroke-width="2"${dash} marker-end="url(#${mk})"/>`);
-        const lx=Math.min(x1,x2)+12;
-        parate.push(`<text x="${lx}" y="${my-9}" font-size="12" font-family="${'Inter,sans-serif'}" fill="#1A1D23">${esc(label)}</text>`);
-        if(guard) parate.push(`<text x="${lx}" y="${my-23}" font-size="10" font-style="italic" font-family="${'Inter,sans-serif'}" fill="#8B93A1">[${esc(guard)}]</text>`);
-      }
-      // query badge (centered below the line)
-      if(qs.length){
-        const hasHi=qs.some(q=>q.s==="high");
-        const txt=qs.length+(hasHi?" ⚑":"");
-        const bw=20+txt.length*6.4, cx=kind==="self"?(x1+60):((x1+x2)/2), bx=cx-bw/2, by=my+7;
-        parate.push(`<g><rect x="${bx}" y="${by}" width="${bw}" height="18" rx="9" fill="${hasHi?'#fbe7ea':'#EEF1F4'}"/>
-          <text x="${cx}" y="${by+13}" text-anchor="middle" font-size="10.5" font-family="${'ui-monospace,monospace'}" fill="${hasHi?'#D7263D':'#3A404B'}">${txt}</text></g>`);
-      }
-      seqMsgs[mid]={flow:f.t,from,to,label,kind,guard,refs,qs};
-      mid++; y+=MSGH;
+function attachEI(d) {
+    d.addEventListener('keydown', ev => {
+        if (ev.key === 'Enter') {
+            ev.preventDefault();
+            const n = d.cloneNode(false); n.textContent = '• ';
+            const db = document.createElement('button'); db.className = 'delbtn';
+            db.textContent = '\u2715'; db.onclick = () => n.remove();
+            n.appendChild(db); attachEI(n);
+            d.parentNode.insertBefore(n, d.nextSibling); n.focus();
+        }
     });
-    y+=10;
-  });
-  const H=y+10;
-  // lifelines behind everything
-  let lifelines="";
-  centers.forEach((cx,i)=>{lifelines+=`<line x1="${cx}" y1="0" x2="${cx}" y2="${H}" stroke="${hex[parts[i][0]]}" stroke-width="1.4" stroke-dasharray="3 5" opacity=".55"/>`;});
-  inner.style.width=SW+"px";
-  const svg=`<svg class="seqsvg" width="${SW}" height="${H}" xmlns="http://www.w3.org/2000/svg">${lifelines}${parate.join("")}</svg>`;
-  // place svg after head
-  const old=inner.querySelector("svg"); if(old) old.remove();
-  head.insertAdjacentHTML("afterend",svg);
 }
-buildSeq();
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.ei').forEach(attachEI);
+});
 
-const laneName={customer:"Customer",provider:"Provider",admin:"Admin",system:"System"};
-function openMsg(mid){
-  const m=seqMsgs[mid]; if(!m) return;
-  const tag=document.getElementById("dTag"); tag.textContent=m.flow; tag.style.background=hex[m.from];
-  const kindLabel = m.kind==="self" ? "Self-action" : m.kind==="return" ? "Return / response" : "Message";
-  document.getElementById("dStep").textContent=`${kindLabel} · ${laneName[m.from]} → ${laneName[m.to]}`;
-  document.getElementById("dTitle").textContent=m.label;
-  document.getElementById("dNew").style.display="none";
-  const story=document.getElementById("dStory"); story.style.setProperty("--dlane",hex[m.from]);
-  story.innerHTML=`<p><span class="lab">From → To</span><span class="em">${laneName[m.from]} → ${laneName[m.to]}</span></p>
-    <p><span class="lab">Interaction</span>${esc(m.label)}${m.guard?` <em style="color:var(--low)">[${esc(m.guard)}]</em>`:""}.</p>`;
-  document.getElementById("acLabel").textContent="Linked stories";
-  const ac=document.getElementById("dAc"); ac.className="ac codes";
-  ac.innerHTML=m.refs.map(c=>{const s=storyByCode[c];return s?`<li><span class="cc" style="background:${hex[s.lane]}">${c}</span><span>${esc(s.title)}</span></li>`:`<li><span>${c}</span></li>`;}).join("");
-  renderQueries(m.qs);
-  openShell(); lastFocus=null;
+function _doJump(fid) {
+    closeModal();
+    setTimeout(() => openModal(fid), 120);
 }
-document.getElementById("seqInner").addEventListener("click",e=>{const h=e.target.closest("[data-mid]");if(h)openMsg(+h.dataset.mid);});
+function openModal(fid) {
+    document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
+    const modal = document.getElementById('modal-' + fid);
+    if (!modal) return;
+    modal.style.display = 'flex';
+    document.getElementById('overlay').classList.add('open');
+}
+function closeModal() { document.getElementById('overlay').classList.remove('open'); }
 
-/* ===== FLOW DIAGRAM (redesigned) ===== */
-(function(){
-  const NS="http://www.w3.org/2000/svg";
-  const P={
-    customer:{fill:"#EBF2FB",stroke:"#2F6FB0",text:"#1A3A5C",header:"#2F6FB0",htext:"#fff",band:"rgba(47,111,176,.06)"},
-    provider:{fill:"#FFF3EB",stroke:"#E8851E",text:"#5C2E00",header:"#E8851E",htext:"#fff",band:"rgba(232,133,30,.06)"},
-    admin:   {fill:"#EAF4F1",stroke:"#1F8A70",text:"#0E3D30",header:"#1F8A70",htext:"#fff",band:"rgba(31,138,112,.06)"},
-    system:  {fill:"#F0F1F3",stroke:"#4B5563",text:"#1A1D23",header:"#4B5563",htext:"#fff",band:"rgba(75,85,99,.06)"},
-  };
-  const TBD_FILL="#FFF8EC",TBD_STROKE="#C8860A",TBD_TEXT="#7A4A0A";
-  const ARROW="#94A0B0",BLACK="#1A1D23",SECTION_BG="#1A1D23",SECTION_TEXT="#FFFFFF";
-  const COLS=4,COL_W=260,LANE_PAD=32,TOP_PAD=32,HEADER_H=64;
-  const NODE_W=200,NODE_H=54,DIAG_W=190,DIAG_H=56;
-  const TBD_W=196,TBD_H=48,TERM_W=170,TERM_H=36,ROW_H=86,SECTION_H=40;
-  const TOTAL_W=COLS*COL_W+LANE_PAD*2;
-  const laneNames=["Customer","Provider","Admin","System"];
-  const laneRoles=["Homeowner","Tradesperson","Platform owner","Engine"];
-  const laneKeys=["customer","provider","admin","system"];
-  const laneIdx={customer:0,provider:1,admin:2,system:3};
-  function cx(lane){return LANE_PAD+laneIdx[lane]*COL_W+COL_W/2;}
-  function cy(row){return TOP_PAD+HEADER_H+row*ROW_H;}
+// step nav removed
 
-  const nodes=[
-    {id:"sec0",type:"section",row:-.3,label:"① Setting up"},
-    {id:"c_start",type:"term",lane:"customer",row:.2,label:"Customer downloads app"},
-    {id:"c_reg",type:"box",lane:"customer",row:1.1,label:"Creates account\n& verifies phone"},
-    {id:"c_loc",type:"box",lane:"customer",row:2.0,label:"Saves home address"},
-    {id:"p_start",type:"term",lane:"provider",row:.2,label:"Pro downloads provider app"},
-    {id:"p_reg",type:"box",lane:"provider",row:1.1,label:"Registers & picks\nservices + price"},
-    {id:"p_docs",type:"box",lane:"provider",row:2.0,label:"Uploads licence\n& government ID"},
-    {id:"s_id",type:"box",lane:"system",row:2.0,label:"ID auto-verified\n(Shufti)"},
-    {id:"a_rev",type:"box",lane:"admin",row:2.9,label:"Admin manually\nreviews licence"},
-    {id:"a_dec",type:"diamond",lane:"admin",row:3.8,label:"Approved?"},
-    {id:"p_rej",type:"box",lane:"provider",row:4.7,label:"Notified: rejected\n+ reason given"},
-    {id:"p_appr",type:"box",lane:"provider",row:4.7,label:"Verified badge\nassigned ✓"},
-    {id:"tbd_bg",type:"tbd",lane:"provider",row:5.6,label:"Still to decide:\nCriminal background check",tbd:"Who runs the criminal background check? The ID check confirms identity only — it does not cover criminal history."},
-    {id:"sec1",type:"section",row:6.7,label:"② Asking for help"},
-    {id:"c_cat",type:"box",lane:"customer",row:7.2,label:"Picks a category\nor describes the problem"},
-    {id:"c_photo",type:"box",lane:"customer",row:8.1,label:"Adds a photo\nor short video"},
-    {id:"s_ai",type:"box",lane:"system",row:8.1,label:"AI works out\nthe right trade"},
-    {id:"tbd_ai",type:"tbd",lane:"system",row:9.0,label:"Still to decide:\nVideo, photo or\nquestions?",tbd:"Should the AI analyse a video, a photo, or answers to a few quick questions to suggest the right specialist?"},
-    {id:"c_urg",type:"diamond",lane:"customer",row:9.6,label:"Is it\nurgent?"},
-    {id:"c_em",type:"box",lane:"customer",row:10.5,label:"Marks as emergency\n(higher price)"},
-    {id:"tbd_em",type:"tbd",lane:"customer",row:11.4,label:"Still to decide:\nHow emergency\nprice is set",tbd:"How is the emergency surcharge calculated — a fixed amount or a multiplier of the normal price?"},
-    {id:"c_norm",type:"box",lane:"customer",row:10.5,label:"Normal booking\nor schedule for later"},
-    {id:"tbd_sch",type:"tbd",lane:"customer",row:11.4,label:"Still to decide:\nScheduled jobs\n& availability",tbd:"How do scheduled jobs interact with the real-time dispatch and provider availability?"},
-    {id:"sec2",type:"section",row:12.6,label:"③ Finding a pro"},
-    {id:"s_disp",type:"box",lane:"system",row:13.1,label:"Sends job to\nnearby pros"},
-    {id:"tbd_rad",type:"tbd",lane:"system",row:14.0,label:"Still to decide:\nSearch radius\n& timeout",tbd:"What are the search-radius tiers (e.g. 5 mi then 10 mi) and how long to wait before widening the search?"},
-    {id:"p_alert",type:"box",lane:"provider",row:13.1,label:"Pro sees the\njob request"},
-    {id:"p_dec",type:"diamond",lane:"provider",row:14.4,label:"Accepts?"},
-    {id:"s_widen",type:"box",lane:"system",row:15.3,label:"Widens search\nto more pros"},
-    {id:"c_none",type:"box",lane:"customer",row:15.3,label:"Told: no pro\nfound yet"},
-    {id:"c_pick",type:"box",lane:"customer",row:15.3,label:"Sees pro's price\n& profile"},
-    {id:"c_conf",type:"diamond",lane:"customer",row:16.2,label:"Happy with\nthe pro?"},
-    {id:"c_back",type:"box",lane:"customer",row:17.1,label:"Keeps browsing\nor cancels"},
-    {id:"c_book",type:"box",lane:"customer",row:17.1,label:"Confirms pro &\npays visit fee"},
-    {id:"tbd_fee",type:"tbd",lane:"customer",row:18.0,label:"Still to decide:\nVisit fee or\nfull price?",tbd:"Does the customer pay just a small visit fee to lock in the booking, or the full estimated price up front?"},
-    {id:"s_hold",type:"box",lane:"system",row:17.1,label:"Payment held\nsafely until done"},
-    {id:"sec3",type:"section",row:19.2,label:"④ Pro on the way"},
-    {id:"p_go",type:"box",lane:"provider",row:19.7,label:"Pro travels to\ncustomer's location"},
-    {id:"s_eta",type:"box",lane:"system",row:19.7,label:"Sends live ETA\n& arrival updates"},
-    {id:"c_track",type:"box",lane:"customer",row:19.7,label:"Tracks pro\non a map"},
-    {id:"p_crew",type:"diamond",lane:"provider",row:20.6,label:"Bringing\na helper?"},
-    {id:"a_vet",type:"box",lane:"admin",row:21.5,label:"Helper must be\nverified first"},
-    {id:"tbd_hlp",type:"tbd",lane:"admin",row:22.4,label:"Still to decide:\nAll helpers\nbg-checked?",tbd:"Must every helper and company employee pass a background check before joining a job?"},
-    {id:"c_crew",type:"box",lane:"customer",row:21.5,label:"Sees verified\nhelper on the job"},
-    {id:"sec4",type:"section",row:23.4,label:"⑤ Job done — settling up"},
-    {id:"p_inv",type:"box",lane:"provider",row:23.9,label:"Sends clear bill\nto customer"},
-    {id:"c_pay",type:"box",lane:"customer",row:23.9,label:"Reviews & pays\nbill in the app"},
-    {id:"s_rel",type:"box",lane:"system",row:23.9,label:"Releases payment\nto pro (less fee)"},
-    {id:"tbd_pay",type:"tbd",lane:"system",row:24.8,label:"Still to decide:\nWhen pro\ngets paid",tbd:"Which job status triggers the payment release, and how quickly does the pro receive the money in their bank?"},
-    {id:"c_rate",type:"box",lane:"customer",row:25.7,label:"Rates the pro\n(1–5 stars)"},
-    {id:"p_rate",type:"box",lane:"provider",row:25.7,label:"Rates the\ncustomer"},
-    {id:"sec5",type:"section",row:26.7,label:"⑥ If something goes wrong"},
-    {id:"c_ok",type:"diamond",lane:"customer",row:27.2,label:"Happy with\noutcome?"},
-    {id:"c_done",type:"term",lane:"customer",row:28.1,label:"All done ✓"},
-    {id:"c_disp",type:"box",lane:"customer",row:28.1,label:"Raises dispute\n& adds evidence"},
-    {id:"a_med",type:"box",lane:"admin",row:29.0,label:"Admin reviews\nboth sides fairly"},
-    {id:"tbd_ref",type:"tbd",lane:"admin",row:29.9,label:"Still to decide:\nPartial or\nfull refund?",tbd:"How is the refund amount decided — full money back, or partial? And how does it affect what the pro was paid?"},
-    {id:"s_ref",type:"box",lane:"system",row:29.0,label:"Refund processed\nif fair"},
-    {id:"end",type:"term",lane:"customer",row:30.8,label:"Resolved ✓"},
-  ];
 
-  const TOTAL_H=TOP_PAD+HEADER_H+31.5*ROW_H+80;
-  const byId={};
-  nodes.forEach(n=>byId[n.id]=n);
 
-  function nodeBot(n){
-    if(n.type==="section") return cy(n.row)+SECTION_H;
-    if(n.type==="term") return cy(n.row)+TERM_H;
-    if(n.type==="diamond") return cy(n.row)+DIAG_H;
-    if(n.type==="tbd") return cy(n.row)+TBD_H;
-    return cy(n.row)+NODE_H;
-  }
-  function nodeTop(n){return cy(n.row);}
-  function nodeMidX(n){return cx(n.lane);}
-
-  const edges=[
-    ["c_start","c_reg"],["c_reg","c_loc"],
-    ["p_start","p_reg"],["p_reg","p_docs"],
-    ["p_docs","s_id"],["s_id","a_rev"],["a_rev","a_dec"],
-    ["a_dec","p_rej","No"],["a_dec","p_appr","Yes"],
-    ["p_appr","tbd_bg"],
-    ["c_loc","c_cat"],["p_appr","p_alert"],
-    ["c_cat","c_photo"],["c_photo","s_ai"],["s_ai","c_urg"],
-    ["c_urg","c_em","Yes"],["c_em","tbd_em"],
-    ["c_urg","c_norm","No"],["c_norm","tbd_sch"],
-    ["c_em","s_disp"],["c_norm","s_disp"],
-    ["s_disp","tbd_rad"],["s_disp","p_alert"],
-    ["p_alert","p_dec"],
-    ["p_dec","s_widen","No"],["s_widen","c_none"],
-    ["p_dec","c_pick","Yes"],
-    ["c_pick","c_conf"],
-    ["c_conf","c_back","No"],["c_conf","c_book","Yes"],
-    ["c_book","tbd_fee"],["c_book","s_hold"],
-    ["c_book","p_go"],
-    ["p_go","s_eta"],["s_eta","c_track"],
-    ["p_go","p_crew"],
-    ["p_crew","a_vet","Yes"],["a_vet","tbd_hlp"],["a_vet","c_crew"],
-    ["p_crew","p_inv","No"],
-    ["p_go","p_inv"],
-    ["p_inv","c_pay"],["c_pay","s_rel"],["s_rel","tbd_pay"],
-    ["c_pay","c_rate"],["p_inv","p_rate"],
-    ["c_rate","c_ok"],
-    ["c_ok","c_done","Yes"],["c_ok","c_disp","No"],
-    ["c_disp","a_med"],["a_med","tbd_ref"],["a_med","s_ref"],
-    ["c_disp","end"],
-  ];
-
-  function renderNode(n){
-    const p=P[n.lane]||{};
-    const lns=n.label.split("\n");
-    const lh=17,fs=12.5;
-    if(n.type==="section"){
-      const w=TOTAL_W-LANE_PAD*2,x=LANE_PAD,y=cy(n.row);
-      return `<g>
-        <rect x="${x}" y="${y}" width="${w}" height="${SECTION_H}" rx="8" fill="${SECTION_BG}"/>
-        <rect x="${x}" y="${y}" width="5" height="${SECTION_H}" rx="2" fill="#E8851E"/>
-        <text x="${x+20}" y="${y+SECTION_H/2+6}" font-size="14.5" font-weight="700" font-family="Space Grotesk,sans-serif" fill="${SECTION_TEXT}" letter-spacing=".2">${n.label}</text>
-      </g>`;
-    }
-    if(n.type==="term"){
-      const x=cx(n.lane)-TERM_W/2,y=cy(n.row);
-      return `<g><rect x="${x}" y="${y}" width="${TERM_W}" height="${TERM_H}" rx="${TERM_H/2}" fill="${BLACK}"/><text x="${cx(n.lane)}" y="${y+TERM_H/2+5}" text-anchor="middle" font-size="12" font-weight="600" font-family="Inter,sans-serif" fill="#fff">${lns[0]}</text></g>`;
-    }
-    if(n.type==="diamond"){
-      const hw=DIAG_W/2,hh=DIAG_H/2,mx=cx(n.lane),my=cy(n.row)+hh;
-      const pts=`${mx},${cy(n.row)} ${mx+hw},${my} ${mx},${cy(n.row)+DIAG_H} ${mx-hw},${my}`;
-      const startY=my-(lns.length*lh/2)+(lh*.7);
-      return `<g><polygon points="${pts}" fill="${p.fill}" stroke="${p.stroke}" stroke-width="2"/>${lns.map((l,i)=>`<text x="${mx}" y="${startY+i*lh}" text-anchor="middle" font-size="11.5" font-weight="600" font-family="Inter,sans-serif" fill="${p.stroke}">${l}</text>`).join("")}</g>`;
-    }
-    if(n.type==="tbd"){
-      const x=cx(n.lane)-TBD_W/2,y=cy(n.row);
-      const startY=y+(TBD_H-lns.length*lh)/2+lh*.78;
-      return `<g class="fd-tbd" data-tbd="${n.tbd.replace(/"/g,"&quot;")}" style="cursor:pointer">
-        <rect x="${x}" y="${y}" width="${TBD_W}" height="${TBD_H}" rx="22" fill="${TBD_FILL}" stroke="${TBD_STROKE}" stroke-width="1.5" stroke-dasharray="5 3"/>
-        <rect x="${x}" y="${y}" width="${TBD_W}" height="${TBD_H}" rx="22" fill="transparent" class="fd-tbd-hit"/>
-        ${lns.map((l,i)=>`<text x="${cx(n.lane)}" y="${startY+i*lh}" text-anchor="middle" font-size="11.5" font-weight="600" font-family="Inter,sans-serif" fill="${TBD_TEXT}">${l}</text>`).join("")}
-        <text x="${cx(n.lane)}" y="${y+TBD_H-5}" text-anchor="middle" font-size="9.5" font-family="Inter,sans-serif" fill="${TBD_STROKE}" opacity=".7">click to read →</text>
-      </g>`;
-    }
-    // box
-    const x=cx(n.lane)-NODE_W/2,y=cy(n.row);
-    const startY=y+(NODE_H-lns.length*lh)/2+lh*.82;
-    return `<g><rect x="${x+2}" y="${y+3}" width="${NODE_W}" height="${NODE_H}" rx="11" fill="rgba(0,0,0,.05)"/><rect x="${x}" y="${y}" width="${NODE_W}" height="${NODE_H}" rx="11" fill="${p.fill}" stroke="${p.stroke}" stroke-width="1.8"/>${lns.map((l,i)=>`<text x="${cx(n.lane)}" y="${startY+i*lh}" text-anchor="middle" font-size="${fs}" font-family="Inter,sans-serif" fill="${p.text}">${l}</text>`).join("")}</g>`;
-  }
-
-  function renderEdge(e){
-    const [fid,tid,label]=e;
-    const f=byId[fid],t=byId[tid];
-    if(!f||!t||f.type==="section"||t.type==="section") return "";
-    const fx=nodeMidX(f),fy=nodeBot(f),tx=nodeMidX(t),ty=nodeTop(t);
-    let d="",lx=0,ly=0;
-    if(Math.abs(fx-tx)<6){
-      d=`M${fx},${fy} L${tx},${ty}`;lx=fx+6;ly=(fy+ty)/2;
-    } else {
-      const midY=fy+Math.min(ROW_H*.38,(ty-fy)*.42);
-      d=`M${fx},${fy} L${fx},${midY} L${tx},${midY} L${tx},${ty}`;lx=(fx+tx)/2;ly=midY-6;
-    }
-    const lp=P[f.lane]||{};
-    const hasL=label&&label.length>0;
-    return `<path d="${d}" fill="none" stroke="${lp.stroke||ARROW}" stroke-width="1.6" opacity=".5" marker-end="url(#arh)"/>${hasL?`<rect x="${lx-18}" y="${ly-12}" width="36" height="16" rx="8" fill="${lp.fill||'#fff'}" opacity=".95"/><text x="${lx}" y="${ly}" text-anchor="middle" font-size="10.5" font-style="italic" font-family="Inter,sans-serif" fill="${lp.stroke||ARROW}">${label}</text>`:""}`;
-  }
-
-  const bands=laneKeys.map((l,i)=>`<rect x="${LANE_PAD+i*COL_W}" y="0" width="${COL_W}" height="${TOTAL_H}" fill="${P[l].band}"/>`).join("");
-  const dividers=laneKeys.map((l,i)=>i>0?`<line x1="${LANE_PAD+i*COL_W}" y1="${TOP_PAD}" x2="${LANE_PAD+i*COL_W}" y2="${TOTAL_H}" stroke="#DDE1E8" stroke-width="1"/>`:"").join("");
-  const headers=laneKeys.map((l,i)=>{
-    const x=LANE_PAD+i*COL_W,w=COL_W;
-    return `<rect x="${x}" y="${TOP_PAD}" width="${w}" height="${HEADER_H}" fill="${P[l].header}"/><text x="${x+w/2}" y="${TOP_PAD+32}" text-anchor="middle" font-size="16" font-weight="700" font-family="Space Grotesk,sans-serif" fill="${P[l].htext}">${laneNames[i]}</text><text x="${x+w/2}" y="${TOP_PAD+50}" text-anchor="middle" font-size="11.5" font-family="Inter,sans-serif" fill="${P[l].htext}" opacity=".8">${laneRoles[i]}</text>`;
-  }).join("");
-  const topBar=`<rect x="0" y="0" width="${TOTAL_W}" height="${TOP_PAD}" fill="#1A1D23"/><text x="${TOTAL_W/2}" y="${TOP_PAD-8}" text-anchor="middle" font-size="11" font-family="Space Grotesk,sans-serif" fill="#9AA0AD" letter-spacing="2">ONEFORALL · END-TO-END FLOW</text>`;
-  const arrowDef=`<defs><marker id="arh" markerWidth="9" markerHeight="9" refX="7" refY="3.5" orient="auto"><path d="M0,0 L8,3.5 L0,7 z" fill="${ARROW}"/></marker></defs>`;
-
-  const edgeSVG=edges.map(e=>renderEdge(e)).join("");
-  const nodeSVG=nodes.map(n=>renderNode(n)).join("");
-  document.getElementById("plainRoot").innerHTML=`<svg width="${TOTAL_W}" height="${TOTAL_H}" xmlns="${NS}">${arrowDef}${bands}${dividers}${topBar}${headers}${edgeSVG}${nodeSVG}</svg>`;
-
-  // click TBD node → open right drawer
-  document.getElementById("plainRoot").addEventListener("click",e=>{
-    const tbd=e.target.closest(".fd-tbd");
-    if(!tbd) return;
-    const q=tbd.dataset.tbd;
-    // find matching node to get the label
-    const matchNode=nodes.find(n=>n.type==="tbd"&&n.tbd===q);
-    const shortLabel=matchNode?matchNode.label.split("\n").slice(1).join(" "):q.substring(0,40);
-    // populate drawer
-    const tag=document.getElementById("dTag");
-    tag.textContent="Still to decide"; tag.style.background="#C8860A";
-    document.getElementById("dStep").textContent="Open question for the kickoff";
-    document.getElementById("dTitle").textContent=shortLabel;
-    document.getElementById("dNew").style.display="none";
-    const story=document.getElementById("dStory");
-    story.style.setProperty("--dlane","#C8860A");
-    story.innerHTML=`
-      <p><span class="lab">The question</span><span class="em">${q}</span></p>
-      <p style="margin-top:10px;font-size:13px;color:#7A4A0A;line-height:1.5">
-        This decision needs to be locked before the relevant screens can be fully built. Raise it in the kickoff so the team can move forward.
-      </p>`;
-    document.getElementById("acLabel").textContent="Why it matters";
-    const ac=document.getElementById("dAc"); ac.className="ac";
-    ac.innerHTML=`<li><span></span><span>The app's behaviour on this screen depends entirely on this choice. A different answer changes what the user sees, how the flow works, or how money is handled.</span></li>
-      <li><span></span><span>Mark it as decided in the Open-Questions log once agreed in the kickoff.</span></li>`;
-    document.getElementById("dQueries").innerHTML=`<li class="empty" style="border:none;background:none;padding:0;display:block">No linked queries — raise and resolve in the kickoff call.</li>`;
-    // open drawer
-    document.getElementById("drawer").classList.add("open");
-    document.getElementById("backdrop").classList.add("open");
-    document.getElementById("drawer").setAttribute("aria-hidden","false");
-    document.getElementById("dClose").focus();
-  });
-})();
-
-/* ===== TABS ===== */
-const tabBtns=document.querySelectorAll("#tabs button");
-tabBtns.forEach(btn=>btn.addEventListener("click",()=>{
-  tabBtns.forEach(b=>b.setAttribute("aria-pressed",b===btn?"true":"false"));
-  const v=btn.dataset.view;
-  document.getElementById("storyView").classList.toggle("hidden",v!=="story");
-  document.getElementById("seqView").classList.toggle("hidden",v!=="seq");
-  document.getElementById("plainView").classList.toggle("hidden",v!=="plain");
-  document.body.classList.toggle("hide-tools",v!=="story");
-  if(v!=="story") closeDrawer();
-}));
 </script>
-</body>
-</html>
+<script>function switchTab(tab,btn){
+  document.querySelectorAll('.tab-panel').forEach(function(p){p.classList.remove('active');p.style.display='none';});
+  document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('active');});
+  document.getElementById('tab-'+tab).style.display='block';
+  document.getElementById('tab-'+tab).classList.add('active');
+  btn.classList.add('active');
+}</script>
+</body></html>
